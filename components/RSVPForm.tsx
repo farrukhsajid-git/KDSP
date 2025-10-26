@@ -10,6 +10,10 @@ export default function RSVPForm() {
     number_of_guests: 1,
     rsvp_status: 'Yes',
     message: '',
+    profession_organization: '',
+    interest_types: [] as string[],
+    referral_source: 'Friend' as 'Friend' | 'Social' | 'Invite',
+    receive_updates: false,
   });
 
   const [loading, setLoading] = useState(false);
@@ -45,6 +49,10 @@ export default function RSVPForm() {
           number_of_guests: 1,
           rsvp_status: 'Yes',
           message: '',
+          profession_organization: '',
+          interest_types: [],
+          referral_source: 'Friend',
+          receive_updates: false,
         });
       } else {
         setMessage({ type: 'error', text: data.error || 'Failed to submit RSVP' });
@@ -62,6 +70,24 @@ export default function RSVPForm() {
       ...prev,
       [name]: name === 'number_of_guests' ? parseInt(value) || 1 : value,
     }));
+  };
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, checked } = e.target;
+
+    if (name === 'interest_types') {
+      setFormData((prev) => ({
+        ...prev,
+        interest_types: checked
+          ? [...prev.interest_types, value]
+          : prev.interest_types.filter((type) => type !== value),
+      }));
+    } else if (name === 'receive_updates') {
+      setFormData((prev) => ({
+        ...prev,
+        receive_updates: checked,
+      }));
+    }
   };
 
   return (
@@ -168,6 +194,80 @@ export default function RSVPForm() {
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="Any special requests or dietary restrictions?"
           />
+        </div>
+
+        {/* Profession / Organization */}
+        <div>
+          <label htmlFor="profession_organization" className="block text-sm font-medium text-gray-700 mb-2">
+            Profession / Organization <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            id="profession_organization"
+            name="profession_organization"
+            required
+            value={formData.profession_organization}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="e.g., Software Engineer at Acme Corp"
+          />
+        </div>
+
+        {/* Interest Types */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Interest Type <span className="text-red-500">*</span>
+          </label>
+          <div className="space-y-2">
+            {['Volunteer', 'Donate', 'Outreach', 'Awareness'].map((type) => (
+              <label key={type} className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="interest_types"
+                  value={type}
+                  checked={formData.interest_types.includes(type)}
+                  onChange={handleCheckboxChange}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <span className="ml-2 text-sm text-gray-700">{type}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Referral Source */}
+        <div>
+          <label htmlFor="referral_source" className="block text-sm font-medium text-gray-700 mb-2">
+            How did you hear about us? <span className="text-red-500">*</span>
+          </label>
+          <select
+            id="referral_source"
+            name="referral_source"
+            required
+            value={formData.referral_source}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="Friend">Friend</option>
+            <option value="Social">Social Media</option>
+            <option value="Invite">Direct Invite</option>
+          </select>
+        </div>
+
+        {/* Receive Updates */}
+        <div>
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              name="receive_updates"
+              checked={formData.receive_updates}
+              onChange={handleCheckboxChange}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <span className="ml-2 text-sm text-gray-700">
+              I&apos;d like to receive updates about KDSP.
+            </span>
+          </label>
         </div>
 
         {/* Submit Button */}
