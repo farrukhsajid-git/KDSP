@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { insertRSVP, RSVPData } from '@/lib/db';
+import { sendRSVPConfirmation } from '@/lib/email';
 
 // Email validation regex
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -101,12 +102,21 @@ export async function POST(request: NextRequest) {
     // Insert into database
     const result = insertRSVP(rsvpData);
 
+    // Send confirmation email (async, don't wait for it)
+    // This runs in background so user doesn't have to wait
+    sendRSVPConfirmation(rsvpData, result.referral_id).catch((error) => {
+      console.error('Failed to send confirmation email:', error);
+      // Don't fail the request if email fails
+    });
+
     return NextResponse.json(
       {
         success: true,
         message: 'RSVP submitted successfully!',
         id: result.lastInsertRowid,
         referral_id: result.referral_id,
+        full_name: rsvpData.full_name,
+        rsvp_status: rsvpData.rsvp_status,
       },
       { status: 201 }
     );

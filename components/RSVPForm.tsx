@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function RSVPForm() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     full_name: '',
     email: '',
@@ -36,24 +38,13 @@ export default function RSVPForm() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage({
-          type: 'success',
-          text: data.message || 'RSVP submitted successfully!',
-          referralId: data.referral_id
+        // Redirect to thank-you page with query parameters
+        const params = new URLSearchParams({
+          name: data.full_name || formData.full_name,
+          referralId: data.referral_id || '',
+          status: data.rsvp_status || formData.rsvp_status,
         });
-        // Reset form
-        setFormData({
-          full_name: '',
-          email: '',
-          phone_number: '',
-          number_of_guests: 1,
-          rsvp_status: 'Yes',
-          message: '',
-          profession_organization: '',
-          interest_types: [],
-          referral_source: 'Friend',
-          receive_updates: false,
-        });
+        router.push(`/thank-you?${params.toString()}`);
       } else {
         setMessage({ type: 'error', text: data.error || 'Failed to submit RSVP' });
       }
