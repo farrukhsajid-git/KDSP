@@ -13,7 +13,7 @@ export default function RSVPForm() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string; referralId?: string } | null>(null);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -32,7 +32,11 @@ export default function RSVPForm() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage({ type: 'success', text: data.message || 'RSVP submitted successfully!' });
+        setMessage({
+          type: 'success',
+          text: data.message || 'RSVP submitted successfully!',
+          referralId: data.referral_id
+        });
         // Reset form
         setFormData({
           full_name: '',
@@ -184,7 +188,18 @@ export default function RSVPForm() {
                 : 'bg-red-50 text-red-800 border border-red-200'
             }`}
           >
-            {message.text}
+            <p className="font-medium">{message.text}</p>
+            {message.type === 'success' && message.referralId && (
+              <div className="mt-3 pt-3 border-t border-green-300">
+                <p className="text-sm font-semibold mb-1">Your Referral ID:</p>
+                <p className="text-lg font-mono bg-white px-3 py-2 rounded border border-green-300 inline-block">
+                  {message.referralId}
+                </p>
+                <p className="text-xs mt-2 text-green-700">
+                  Share this ID with friends to track your referrals!
+                </p>
+              </div>
+            )}
           </div>
         )}
       </form>

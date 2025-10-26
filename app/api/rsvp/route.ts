@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
         success: true,
         message: 'RSVP submitted successfully!',
         id: result.lastInsertRowid,
+        referral_id: result.referral_id,
       },
       { status: 201 }
     );
