@@ -1,5 +1,9 @@
 [phases.install]
-cmds = ["npm ci --prefer-offline=false"]
+cmds = [
+  "rm -rf node_modules package-lock.json",
+  "npm install --force",
+  "npm install resend --save"
+]
 
 [phases.build]
 cmds = ["npm run build"]
