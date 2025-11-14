@@ -74,8 +74,8 @@ export default function Home() {
         <div className="bg-white rounded-lg shadow-lg p-6 md:p-10">
           {/* Description */}
           <p className="text-gray-700 text-center mb-8 leading-relaxed">
-            We're excited to bring KDSP to Virginia! Join us for an introductory evening
-            to learn about KDSP's inspiring work supporting children on the autism
+            We&apos;re excited to bring KDSP to Virginia! Join us for an introductory evening
+            to learn about KDSP&apos;s inspiring work supporting children on the autism
             spectrum and their families and how you can help us build a strong Virginia Chapter dedicated to inclusion, education, and empowerment.
           </p>
 

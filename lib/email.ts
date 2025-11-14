@@ -71,7 +71,7 @@ export function generateConfirmationEmail(
   rsvpData: RSVPData,
   referralId: string
 ): { html: string; text: string; subject: string } {
-  const { full_name, rsvp_status, number_of_guests, profession_organization, interest_types, donation_intent, donation_value, donation_custom } = rsvpData;
+  const { full_name, rsvp_status, number_of_guests } = rsvpData;
 
   const subject =
     rsvp_status === 'Yes'
