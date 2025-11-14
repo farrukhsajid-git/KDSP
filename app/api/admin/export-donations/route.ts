@@ -21,74 +21,59 @@ function escapeCSVField(field: any): string {
 }
 
 /**
- * Converts RSVP records to CSV format
+ * Converts donation records to CSV format
  */
-function convertToCSV(rsvps: any[]): string {
+function convertDonationsToCSV(rsvps: any[]): string {
   // Define CSV headers
   const headers = [
     'ID',
     'Full Name',
     'Email',
     'Phone Number',
-    'Number of Guests',
     'RSVP Status',
-    'Message',
-    'Referral ID',
-    'Profession/Organization',
-    'Interest Types',
-    'Referral Source',
-    'Receive Updates',
     'Donation Intent',
     'Donation Value',
+    'Custom Amount',
+    'Total Donation Amount',
     'Created At',
   ];
 
-  // Create CSV rows
-  const rows = rsvps.map((rsvp) => {
-    // Parse interest_types JSON array
-    let interestTypes = '';
-    try {
-      const parsed = JSON.parse(rsvp.interest_types || '[]');
-      interestTypes = Array.isArray(parsed) ? parsed.join(', ') : '';
-    } catch {
-      interestTypes = '';
-    }
+  // Create CSV rows - only include RSVPs with donation intent
+  const rows = rsvps
+    .filter((rsvp) => {
+      try {
+        const donationIntent = rsvp.donation_intent ? JSON.parse(rsvp.donation_intent) : [];
+        return donationIntent && donationIntent.length > 0;
+      } catch {
+        return false;
+      }
+    })
+    .map((rsvp) => {
+      // Parse donation_intent JSON array
+      let donationIntent = '';
+      try {
+        const parsed = JSON.parse(rsvp.donation_intent || '[]');
+        donationIntent = Array.isArray(parsed) ? parsed.join(', ') : '';
+      } catch {
+        donationIntent = '';
+      }
 
-    // Parse donation_intent JSON array
-    let donationIntent = '';
-    try {
-      const parsed = JSON.parse(rsvp.donation_intent || '[]');
-      donationIntent = Array.isArray(parsed) ? parsed.join(', ') : '';
-    } catch {
-      donationIntent = '';
-    }
+      // Calculate total donation amount
+      const totalAmount = rsvp.donation_value || rsvp.donation_custom || 0;
 
-    // Format donation value
-    let donationValue = '';
-    if (rsvp.donation_value) {
-      donationValue = `$${rsvp.donation_value}`;
-    } else if (rsvp.donation_custom) {
-      donationValue = `$${rsvp.donation_custom} (custom)`;
-    }
-
-    return [
-      rsvp.id,
-      rsvp.full_name,
-      rsvp.email,
-      rsvp.phone_number || '',
-      rsvp.number_of_guests,
-      rsvp.rsvp_status,
-      rsvp.message || '',
-      rsvp.referral_id,
-      rsvp.profession_organization || '',
-      interestTypes,
-      rsvp.referral_source || '',
-      rsvp.receive_updates === 1 ? 'Yes' : 'No',
-      donationIntent,
-      donationValue,
-      rsvp.created_at,
-    ].map(escapeCSVField);
-  });
+      return [
+        rsvp.id,
+        rsvp.full_name,
+        rsvp.email,
+        rsvp.phone_number || '',
+        rsvp.rsvp_status,
+        donationIntent,
+        rsvp.donation_value || '',
+        rsvp.donation_custom || '',
+        totalAmount ? `$${totalAmount}` : '',
+        rsvp.created_at,
+      ].map(escapeCSVField);
+    });
 
   // Combine headers and rows
   const csvContent = [
@@ -113,11 +98,11 @@ export async function GET(request: NextRequest) {
     const rsvps = getAllRSVPs('created_at', 'desc');
 
     // Convert to CSV
-    const csvContent = convertToCSV(rsvps);
+    const csvContent = convertDonationsToCSV(rsvps);
 
     // Create filename with timestamp
     const timestamp = new Date().toISOString().split('T')[0];
-    const filename = `kdsp-rsvps-${timestamp}.csv`;
+    const filename = `kdsp-donation-data-${timestamp}.csv`;
 
     // Return CSV file with proper headers
     return new NextResponse(csvContent, {
@@ -128,9 +113,9 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error exporting RSVPs:', error);
+    console.error('Error exporting donation data:', error);
     return NextResponse.json(
-      { error: 'Failed to export RSVPs. Please try again.' },
+      { error: 'Failed to export donation data. Please try again.' },
       { status: 500 }
     );
   }

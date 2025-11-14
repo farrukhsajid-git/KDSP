@@ -4,7 +4,7 @@ import { FaWhatsapp, FaLinkedin, FaXTwitter } from 'react-icons/fa6';
 
 export default function ShareKDSP() {
   const eventUrl = typeof window !== 'undefined' ? window.location.href : 'https://kdsp-events.com';
-  const shareMessage = `Join us at the KDSP Annual Gala Celebration on December 14, 2025! RSVP now: ${eventUrl}`;
+  const shareMessage = `Support KDSP Virginia's Fundraising Gala for Down syndrome services in Pakistan! Join us December 14, 2025. RSVP: ${eventUrl}`;
 
   const handleWhatsAppShare = () => {
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;

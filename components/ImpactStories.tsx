@@ -5,24 +5,24 @@ import Image from 'next/image';
 const stories = [
   {
     id: 1,
-    name: 'Sarah Johnson',
-    title: 'Entrepreneur & Program Graduate',
+    name: 'Ayesha K.',
+    title: 'Parent & Family Support Advocate',
     image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop',
-    story: 'Through KDSP\'s entrepreneurship program, I was able to launch my own social enterprise that now employs 15 people in my community. The mentorship and resources provided were invaluable to my success.',
+    story: 'KDSP gave us hope when we felt alone. Through family support sessions, we connected with other parents and learned how to help our daughter thrive. Today she attends mainstream school!',
   },
   {
     id: 2,
-    name: 'Michael Chen',
-    title: 'Education Advocate & Volunteer',
+    name: 'Ahmed R.',
+    title: 'KDSP Skills Program Graduate',
     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
-    story: 'KDSP gave me the platform to make a real difference. As a volunteer educator, I\'ve helped over 200 students gain access to quality learning resources and mentorship opportunities.',
+    story: 'The skills development program at KDSP taught me valuable life and work skills. I now work part-time at a local café and feel included in my community.',
   },
   {
     id: 3,
-    name: 'Aisha Patel',
-    title: 'Community Leader & Beneficiary',
+    name: 'Sarah M.',
+    title: 'Teacher & KDSP Volunteer',
     image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop',
-    story: 'The community development initiatives by KDSP transformed our neighborhood. We now have a thriving learning center and programs that support youth development and skills training.',
+    story: 'KDSP\'s teacher training transformed how I work with students with Down syndrome. The inclusive education techniques I learned benefit all my students.',
   },
 ];
 

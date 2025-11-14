@@ -12,24 +12,22 @@ export default function AboutKDSP() {
           {/* Text Content */}
           <div className="space-y-6">
             <p className="text-lg text-gray-700 leading-relaxed">
-              KDSP (Knowledge Development & Social Progress) is a pioneering organization dedicated to
-              empowering communities through education, innovation, and social development. Since our
-              inception, we have been at the forefront of creating meaningful change by bridging the
-              gap between knowledge and action.
+              <strong>Karachi Down Syndrome Program (KDSP)</strong> empowers individuals with Down syndrome in Pakistan
+              through quality developmental services. Founded in 2014 by concerned parents and professionals, we serve
+              a 1,700+ strong network across Pakistan and internationally.
             </p>
 
             <p className="text-lg text-gray-700 leading-relaxed">
-              Our mission is to foster sustainable development by providing access to quality education,
-              promoting social entrepreneurship, and building inclusive communities. Through our various
-              programs and initiatives, we have touched thousands of lives and continue to expand our
-              reach to create lasting impact.
+              <strong>Our Mission:</strong> Provide one-stop access to affordable developmental services while advocating
+              for inclusion in mainstream society. Through our KASHTI model (Family Support, Awareness, Healthcare,
+              Skills Development, Education, and Early Intervention), we ensure finances never hinder access—94% of
+              families receive financial support.
             </p>
 
             <p className="text-lg text-gray-700 leading-relaxed">
-              Join us in our journey to build a better tomorrow. Together, we can create opportunities,
-              inspire innovation, and drive positive change in communities around the world. Your support
-              and participation make all the difference in achieving our shared vision of progress and
-              prosperity for all.
+              <strong>Our Impact:</strong> 260+ family support sessions, 15,000+ hearts reached through awareness,
+              850+ surgeries facilitated, 410+ individuals in skills programs, 265+ teachers trained, and 600+ weekly
+              early intervention sessions.
             </p>
           </div>
 

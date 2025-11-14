@@ -17,7 +17,7 @@ function ThankYouContent() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'kdsp-annual-gala-2025.ics';
+      a.download = 'kdsp-virginia-chapter-launch-2026.ics';
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -28,12 +28,6 @@ function ThankYouContent() {
     }
   };
 
-  const handleDownloadPDF = () => {
-    const link = document.createElement('a');
-    link.href = '/kdsp-quick-facts.pdf';
-    link.download = 'Meet-KDSP-Quick-Facts.pdf';
-    link.click();
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -75,44 +69,41 @@ function ThankYouContent() {
 
           {status === 'Yes' ? (
             <p className="text-lg text-center text-gray-700 mb-8">
-              We&apos;re thrilled you&apos;ll be joining us at the Annual Gala Celebration!
+              We&apos;re thrilled you&apos;ll be joining us at the KDSP Event!
               A confirmation email with all the details has been sent to your inbox.
-            </p>
-          ) : status === 'Maybe' ? (
-            <p className="text-lg text-center text-gray-700 mb-8">
-              Thank you for your response! We hope you&apos;ll be able to join us.
-              A confirmation email has been sent to your inbox with all the event details.
             </p>
           ) : (
             <p className="text-lg text-center text-gray-700 mb-8">
-              Thank you for letting us know. We&apos;ll miss you at the event!
-              You&apos;ll still receive updates about KDSP activities if you opted in.
+              Thank you for your interest in KDSP Virginia Chapter!
+              We&apos;ll keep you updated about our work and future events via email.
             </p>
           )}
 
-          {/* Event Details Card */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Event Details</h3>
-            <div className="space-y-2 text-gray-700">
-              <p><span className="font-semibold">Event:</span> Annual Gala Celebration</p>
-              <p><span className="font-semibold">Date:</span> Saturday, December 14, 2025</p>
-              <p><span className="font-semibold">Time:</span> 6:00 PM - 11:00 PM</p>
-              <p><span className="font-semibold">Venue:</span> Grand Ballroom, Convention Center</p>
+          {/* Event Details Card - Only for attending guests */}
+          {status === 'Yes' && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Event Details</h3>
+              <div className="space-y-2 text-gray-700">
+                <p><span className="font-semibold">Event:</span> KDSP Virginia Chapter Launch</p>
+                <p><span className="font-semibold">Date:</span> Sunday, January 18, 2026</p>
+                <p><span className="font-semibold">Time:</span> To be Announced</p>
+                <p><span className="font-semibold">Venue:</span> To Be Announced</p>
+                <p className="mt-4 text-sm italic">We will be sharing the event details to the email provided in this form</p>
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Referral ID */}
-          {referralId && (
+          {/* Confirmation ID - Only for attending guests */}
+          {status === 'Yes' && referralId && (
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-6 mb-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Your Referral ID</h3>
-              <p className="text-gray-700 mb-3">Share this with friends to track your referrals!</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Your Confirmation ID</h3>
               <div className="bg-white px-4 py-3 rounded-md border border-purple-300 font-mono text-lg font-bold text-purple-600 text-center">
                 {referralId}
               </div>
             </div>
           )}
 
-          {/* Action Buttons */}
+          {/* Action Buttons - Only for attending guests */}
           {status === 'Yes' && (
             <div className="space-y-4 mb-8">
               <button
@@ -134,26 +125,6 @@ function ThankYouContent() {
                 </svg>
                 <span>Download Calendar Invite (.ics)</span>
               </button>
-
-              <button
-                onClick={handleDownloadPDF}
-                className="w-full bg-purple-600 text-white py-3 px-6 rounded-lg hover:bg-purple-700 transition-colors font-medium flex items-center justify-center space-x-2"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-                <span>Download &quot;Meet KDSP – Quick Facts&quot; PDF</span>
-              </button>
             </div>
           )}
 
@@ -161,26 +132,41 @@ function ThankYouContent() {
           <div className="border-t border-gray-200 pt-6">
             <h3 className="text-xl font-semibold text-gray-900 mb-4">What&apos;s Next?</h3>
             <ul className="space-y-3 text-gray-700">
-              <li className="flex items-start">
-                <span className="text-blue-600 mr-2 mt-1">✓</span>
-                <span>Check your email for confirmation and event details</span>
-              </li>
-              {status === 'Yes' && (
+              {status === 'Yes' ? (
                 <>
+                  <li className="flex items-start">
+                    <span className="text-blue-600 mr-2 mt-1">✓</span>
+                    <span>Check your email for confirmation and event details</span>
+                  </li>
                   <li className="flex items-start">
                     <span className="text-blue-600 mr-2 mt-1">✓</span>
                     <span>Add the event to your calendar using the button above</span>
                   </li>
                   <li className="flex items-start">
                     <span className="text-blue-600 mr-2 mt-1">✓</span>
-                    <span>Share your referral ID with friends and family</span>
+                    <span>Save your confirmation ID for reference</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-blue-600 mr-2 mt-1">✓</span>
+                    <span>Visit www.kdsp.org.pk to learn more about KDSP&apos;s work</span>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className="flex items-start">
+                    <span className="text-blue-600 mr-2 mt-1">✓</span>
+                    <span>Check your email for confirmation of your interest</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-blue-600 mr-2 mt-1">✓</span>
+                    <span>We&apos;ll send you updates about future KDSP Virginia Chapter events</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-blue-600 mr-2 mt-1">✓</span>
+                    <span>Visit www.kdsp.org.pk to learn more about KDSP&apos;s mission</span>
                   </li>
                 </>
               )}
-              <li className="flex items-start">
-                <span className="text-blue-600 mr-2 mt-1">✓</span>
-                <span>Follow us on social media for updates</span>
-              </li>
             </ul>
           </div>
 
@@ -200,25 +186,15 @@ function ThankYouContent() {
           <p>
             Questions? Contact us at{' '}
             <a
-              href="mailto:events@kdsp.com"
+              href="mailto:kdspdmv@gmail.com"
               className="text-blue-600 hover:text-blue-700"
             >
-              events@kdsp.com
+              kdspdmv@gmail.com
             </a>
           </p>
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <p className="text-gray-400">
-              &copy; 2025 KDSP Events. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

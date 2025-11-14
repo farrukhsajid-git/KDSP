@@ -30,6 +30,9 @@ const migrations = [
   { column: 'interest_types', type: 'TEXT' },
   { column: 'referral_source', type: 'TEXT' },
   { column: 'receive_updates', type: 'INTEGER' },
+  { column: 'donation_intent', type: 'TEXT' },
+  { column: 'donation_value', type: 'INTEGER' },
+  { column: 'donation_custom', type: 'REAL' },
 ];
 
 migrations.forEach(({ column, type }) => {
@@ -47,10 +50,12 @@ export interface RSVPData {
   number_of_guests: number;
   rsvp_status: 'Yes' | 'No' | 'Maybe';
   message?: string;
-  profession_organization: string;
   interest_types: string[]; // Will be stored as JSON string
   referral_source: 'Friend' | 'Social' | 'Invite';
   receive_updates: boolean;
+  donation_intent: string[]; // Will be stored as JSON string
+  donation_value?: number | null;
+  donation_custom?: number | null;
 }
 
 export interface RSVPRecord {
@@ -62,10 +67,12 @@ export interface RSVPRecord {
   rsvp_status: 'Yes' | 'No' | 'Maybe';
   message?: string;
   referral_id: string;
-  profession_organization: string;
   interest_types: string; // JSON string in database
   referral_source: 'Friend' | 'Social' | 'Invite';
   receive_updates: number; // 0 or 1 in database
+  donation_intent: string; // JSON string in database
+  donation_value?: number | null;
+  donation_custom?: number | null;
   created_at: string;
 }
 
@@ -105,12 +112,14 @@ export function insertRSVP(data: RSVPData): RSVPResponse {
           rsvp_status,
           message,
           referral_id,
-          profession_organization,
           interest_types,
           referral_source,
-          receive_updates
+          receive_updates,
+          donation_intent,
+          donation_value,
+          donation_custom
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `);
 
       const result = stmt.run(
@@ -121,10 +130,12 @@ export function insertRSVP(data: RSVPData): RSVPResponse {
         data.rsvp_status,
         data.message || null,
         referralId,
-        data.profession_organization,
         JSON.stringify(data.interest_types),
         data.referral_source,
-        data.receive_updates ? 1 : 0
+        data.receive_updates ? 1 : 0,
+        JSON.stringify(data.donation_intent),
+        data.donation_value || null,
+        data.donation_custom || null
       );
 
       return {
@@ -190,6 +201,19 @@ export function getRSVPStats() {
     }, {} as Record<string, number>),
     wantsUpdates,
   };
+}
+
+export function deleteRSVPs(ids: number[]): number {
+  if (!ids || ids.length === 0) {
+    return 0;
+  }
+
+  // Create placeholders for the IN clause
+  const placeholders = ids.map(() => '?').join(',');
+  const stmt = db.prepare(`DELETE FROM rsvps WHERE id IN (${placeholders})`);
+  const result = stmt.run(...ids);
+
+  return result.changes;
 }
 
 export default db;

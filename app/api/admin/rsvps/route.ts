@@ -22,10 +22,11 @@ export async function GET(request: NextRequest) {
     // Fetch all RSVPs with sorting
     const rsvps = getAllRSVPs(sortBy, sortOrder);
 
-    // Parse interest_types JSON strings back to arrays for the response
+    // Parse JSON strings back to arrays for the response
     const rsvpsWithParsedData = rsvps.map((rsvp) => ({
       ...rsvp,
       interest_types: rsvp.interest_types ? JSON.parse(rsvp.interest_types) : [],
+      donation_intent: rsvp.donation_intent ? JSON.parse(rsvp.donation_intent) : [],
       receive_updates: rsvp.receive_updates === 1,
     }));
 

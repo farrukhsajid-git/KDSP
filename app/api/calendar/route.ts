@@ -4,8 +4,8 @@ import { createEvents } from 'ics';
 export async function GET() {
   try {
     // Event details
-    const eventDate = new Date('2025-12-14T18:00:00');
-    const eventEndDate = new Date('2025-12-14T23:00:00');
+    const eventDate = new Date('2026-01-18T18:00:00');
+    const eventEndDate = new Date('2026-01-18T21:00:00');
 
     const event = {
       start: [
@@ -22,25 +22,26 @@ export async function GET() {
         eventEndDate.getHours(),
         eventEndDate.getMinutes(),
       ] as [number, number, number, number, number],
-      title: 'KDSP Annual Gala Celebration',
+      title: 'KDSP Virginia Chapter Launch',
       description:
-        'Join us for an unforgettable evening of celebration, networking, and entertainment. ' +
-        'Dress code: Formal attire. Complimentary valet parking available. Dinner and drinks will be provided.',
-      location: 'Grand Ballroom, Convention Center',
-      url: 'https://kdsp.com/events',
+        'Join us for an introductory evening to learn about KDSP\'s inspiring work supporting children on the autism spectrum and their families. ' +
+        'Help us build a strong Virginia Chapter dedicated to inclusion, education, and empowerment. ' +
+        'Venue details will be sent via email.',
+      location: 'Northern Virginia (Details to be announced)',
+      url: 'https://www.kdsp.org.pk',
       status: 'CONFIRMED' as const,
       busyStatus: 'BUSY' as const,
-      organizer: { name: 'KDSP Events', email: 'events@kdsp.com' },
-      categories: ['Event', 'Gala', 'Celebration'],
+      organizer: { name: 'KDSP Events', email: 'kdspdmv@gmail.com' },
+      categories: ['Event', 'Launch', 'KDSP'],
       alarms: [
         {
           action: 'display' as const,
-          description: 'KDSP Annual Gala - Tomorrow!',
+          description: 'KDSP Virginia Chapter Launch - Tomorrow!',
           trigger: { hours: 24, before: true },
         },
         {
           action: 'display' as const,
-          description: 'KDSP Annual Gala - In 2 hours',
+          description: 'KDSP Virginia Chapter Launch - In 2 hours',
           trigger: { hours: 2, before: true },
         },
       ],
@@ -61,7 +62,7 @@ export async function GET() {
       status: 200,
       headers: {
         'Content-Type': 'text/calendar',
-        'Content-Disposition': 'attachment; filename="kdsp-annual-gala-2025.ics"',
+        'Content-Disposition': 'attachment; filename="kdsp-virginia-chapter-launch-2026.ics"',
       },
     });
   } catch (error) {

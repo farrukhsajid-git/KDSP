@@ -11,6 +11,9 @@ const VALID_INTEREST_TYPES = ['Volunteer', 'Donate', 'Outreach', 'Awareness'] as
 // Valid referral sources
 const VALID_REFERRAL_SOURCES = ['Friend', 'Social', 'Invite'] as const;
 
+// Valid donation intent values
+const VALID_DONATION_INTENT = ['individual', 'company', 'awareness', 'volunteer', 'learn_more'] as const;
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -44,32 +47,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate new required fields
-    if (!body.profession_organization || typeof body.profession_organization !== 'string' || body.profession_organization.trim() === '') {
-      return NextResponse.json(
-        { error: 'Profession/Organization is required' },
-        { status: 400 }
-      );
-    }
-
-    if (!body.interest_types || !Array.isArray(body.interest_types) || body.interest_types.length === 0) {
-      return NextResponse.json(
-        { error: 'At least one interest type must be selected' },
-        { status: 400 }
-      );
-    }
-
-    // Validate each interest type
-    const invalidInterests = body.interest_types.filter(
-      (type: string) => !VALID_INTEREST_TYPES.includes(type as any)
-    );
-
-    if (invalidInterests.length > 0) {
-      return NextResponse.json(
-        { error: `Invalid interest type(s): ${invalidInterests.join(', ')}. Must be one of: ${VALID_INTEREST_TYPES.join(', ')}` },
-        { status: 400 }
-      );
-    }
+    // Profession/Organization is now optional
+    // Interest types is now optional (can be empty array)
 
     if (!body.referral_source || !VALID_REFERRAL_SOURCES.includes(body.referral_source)) {
       return NextResponse.json(
@@ -85,6 +64,56 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate donation_intent (optional field, but if provided must be valid)
+    if (body.donation_intent !== undefined) {
+      if (!Array.isArray(body.donation_intent)) {
+        return NextResponse.json(
+          { error: 'Donation intent must be an array' },
+          { status: 400 }
+        );
+      }
+
+      // Validate each donation intent value
+      const invalidIntents = body.donation_intent.filter(
+        (intent: string) => !VALID_DONATION_INTENT.includes(intent as any)
+      );
+
+      if (invalidIntents.length > 0) {
+        return NextResponse.json(
+          { error: `Invalid donation intent(s): ${invalidIntents.join(', ')}. Must be one of: ${VALID_DONATION_INTENT.join(', ')}` },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Validate donation_value (optional field, but if provided must be valid)
+    if (body.donation_value !== undefined && body.donation_value !== null) {
+      if (typeof body.donation_value !== 'number' || body.donation_value <= 0) {
+        return NextResponse.json(
+          { error: 'Donation value must be a positive number' },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Validate donation_custom (optional field, but if provided must be valid)
+    if (body.donation_custom !== undefined && body.donation_custom !== null) {
+      if (typeof body.donation_custom !== 'number' || body.donation_custom <= 0) {
+        return NextResponse.json(
+          { error: 'Custom donation amount must be a positive number greater than zero' },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Ensure only one donation value is set
+    if (body.donation_value && body.donation_custom) {
+      return NextResponse.json(
+        { error: 'Cannot set both donation_value and donation_custom. Please choose one.' },
+        { status: 400 }
+      );
+    }
+
     // Prepare data for insertion
     const rsvpData: RSVPData = {
       full_name: body.full_name.trim(),
@@ -93,10 +122,12 @@ export async function POST(request: NextRequest) {
       number_of_guests: body.number_of_guests,
       rsvp_status: body.rsvp_status,
       message: body.message?.trim() || undefined,
-      profession_organization: body.profession_organization.trim(),
-      interest_types: body.interest_types,
+      interest_types: body.interest_types || [],
       referral_source: body.referral_source,
       receive_updates: body.receive_updates,
+      donation_intent: body.donation_intent || [],
+      donation_value: body.donation_value || null,
+      donation_custom: body.donation_custom || null,
     };
 
     // Insert into database

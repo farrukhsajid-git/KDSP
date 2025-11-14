@@ -10,30 +10,76 @@ interface RSVP {
   number_of_guests: number;
   rsvp_status: 'Yes' | 'No' | 'Maybe';
   message?: string;
-  referral_id: string;
-  profession_organization: string;
   interest_types: string[];
-  referral_source: 'Friend' | 'Social' | 'Invite';
   receive_updates: boolean;
   created_at: string;
-}
-
-interface Stats {
-  totalRSVPs: number;
-  byStatus: Record<string, number>;
-  byReferralSource: Record<string, number>;
-  wantsUpdates: number;
 }
 
 export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [rsvps, setRsvps] = useState<RSVP[]>([]);
-  const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>('created_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+
+  // Check for saved session on mount
+  useEffect(() => {
+    const savedPassword = localStorage.getItem('kdsp_admin_session');
+    if (savedPassword) {
+      setPassword(savedPassword);
+      // Verify the saved password
+      fetch(`/api/admin/rsvps?sortBy=created_at&order=desc`, {
+        headers: { Authorization: savedPassword },
+      })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            localStorage.removeItem('kdsp_admin_session');
+            throw new Error('Invalid session');
+          }
+        })
+        .then(data => {
+          setRsvps(data.data);
+          setIsAuthenticated(true);
+        })
+        .catch(() => {
+          setPassword('');
+        });
+    }
+  }, []);
+
+  // Calculate stats from RSVPs
+  const stats = {
+    totalRSVPs: rsvps.length,
+    attendingInPerson: rsvps.filter(r => r.rsvp_status === 'Yes').length,
+    notAttending: rsvps.filter(r => r.rsvp_status === 'No').length,
+    totalGuests: rsvps
+      .filter(r => r.rsvp_status === 'Yes') // Only count guests who are actually attending
+      .reduce((sum, r) => sum + r.number_of_guests, 0),
+    whatsappUpdates: rsvps.filter(r => r.receive_updates).length,
+  };
+
+  // Get interested in breakdown
+  const getInterestedInStats = () => {
+    const stats: Record<string, number> = {};
+    rsvps.forEach(rsvp => {
+      rsvp.interest_types?.forEach((interest: string) => {
+        if (interest === 'joining_chapter_team' ||
+            interest === 'volunteering_events' ||
+            interest === 'donating_sponsoring' ||
+            interest === 'attending_future_events') {
+          stats[interest] = (stats[interest] || 0) + 1;
+        }
+      });
+    });
+    return stats;
+  };
+
+  const interestedInStats = getInterestedInStats();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +87,6 @@ export default function AdminPage() {
     setError(null);
 
     try {
-      // Try to fetch RSVPs with the password
       const response = await fetch(`/api/admin/rsvps?sortBy=${sortBy}&order=${sortOrder}`, {
         headers: {
           Authorization: password,
@@ -52,8 +97,8 @@ export default function AdminPage() {
         const data = await response.json();
         setRsvps(data.data);
         setIsAuthenticated(true);
-        // Also fetch stats
-        await fetchStats(password);
+        // Save password to localStorage for session persistence
+        localStorage.setItem('kdsp_admin_session', password);
       } else {
         setError('Invalid password');
       }
@@ -61,23 +106,6 @@ export default function AdminPage() {
       setError('Failed to authenticate');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchStats = async (authPassword: string) => {
-    try {
-      const response = await fetch('/api/admin/stats', {
-        headers: {
-          Authorization: authPassword,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setStats(data.data);
-      }
-    } catch (err) {
-      console.error('Failed to fetch stats:', err);
     }
   };
 
@@ -147,11 +175,89 @@ export default function AdminPage() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('kdsp_admin_session');
+    setIsAuthenticated(false);
+    setPassword('');
+    setRsvps([]);
+    setSelectedIds([]);
+  };
+
+  const formatInterestLabel = (interest: string) => {
+    const labels: Record<string, string> = {
+      'joining_chapter_team': 'Joining Chapter Team',
+      'volunteering_events': 'Volunteering for Events',
+      'donating_sponsoring': 'Donating/Sponsoring',
+      'attending_future_events': 'Attending Future Events',
+      'learn_about_impact': 'Learn About Impact',
+      'meet_team': 'Meet the Team',
+      'connect_and_help': 'Connect with Families',
+      'explore_volunteer': 'Help Shape Chapter',
+    };
+    return labels[interest] || interest;
+  };
+
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedIds(rsvps.map(rsvp => rsvp.id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const handleSelectRow = (id: number) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter(selectedId => selectedId !== id));
+    } else {
+      setSelectedIds([...selectedIds, id]);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (selectedIds.length === 0) return;
+
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${selectedIds.length} record${selectedIds.length !== 1 ? 's' : ''}? This action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    setLoading(true);
+    try {
+      const response = await fetch('/api/admin/delete', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: password,
+        },
+        body: JSON.stringify({ ids: selectedIds }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Refresh the list
+        await fetchRSVPs();
+        setSelectedIds([]);
+        alert(data.message || 'Records deleted successfully');
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error || 'Failed to delete records');
+      }
+    } catch (err) {
+      setError('Failed to delete records');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-2xl font-bold text-center mb-6">Admin Login</h1>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full bg-white rounded-xl shadow-2xl p-8">
+          <div className="text-center mb-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">KDSP Admin</h1>
+            <p className="text-gray-600">January 18 Event Dashboard</p>
+          </div>
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
@@ -163,19 +269,19 @@ export default function AdminPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter admin password"
               />
             </div>
             {error && (
-              <div className="bg-red-50 text-red-800 p-3 rounded-md border border-red-200">
+              <div className="bg-red-50 text-red-800 p-3 rounded-lg border border-red-200">
                 {error}
               </div>
             )}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed font-semibold"
             >
               {loading ? 'Authenticating...' : 'Login'}
             </button>
@@ -186,51 +292,98 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-3xl font-bold">KDSP Admin Dashboard</h1>
-            <button
-              onClick={handleExport}
-              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
-            >
-              Export CSV
-            </button>
-          </div>
-
-          {/* Summary Stats */}
-          {stats && (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <h3 className="text-sm font-medium text-blue-900 mb-1">Total RSVPs</h3>
-                <p className="text-2xl font-bold text-blue-600">{stats.totalRSVPs}</p>
-              </div>
-              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                <h3 className="text-sm font-medium text-green-900 mb-1">Yes</h3>
-                <p className="text-2xl font-bold text-green-600">{stats.byStatus.Yes || 0}</p>
-              </div>
-              <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                <h3 className="text-sm font-medium text-yellow-900 mb-1">Maybe</h3>
-                <p className="text-2xl font-bold text-yellow-600">{stats.byStatus.Maybe || 0}</p>
-              </div>
-              <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-                <h3 className="text-sm font-medium text-red-900 mb-1">No</h3>
-                <p className="text-2xl font-bold text-red-600">{stats.byStatus.No || 0}</p>
-              </div>
+        {/* Header */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">KDSP Admin Dashboard</h1>
+              <p className="text-gray-600 mt-1">Virginia Chapter - January 18 Event</p>
+              {selectedIds.length > 0 && (
+                <p className="text-blue-600 mt-1 text-sm font-medium">
+                  {selectedIds.length} record{selectedIds.length !== 1 ? 's' : ''} selected
+                </p>
+              )}
             </div>
-          )}
+            <div className="flex gap-3">
+              {selectedIds.length > 0 && (
+                <button
+                  onClick={handleDelete}
+                  disabled={loading}
+                  className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-semibold shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                  🗑️ Delete Selected ({selectedIds.length})
+                </button>
+              )}
+              <button
+                onClick={handleExport}
+                className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold shadow-md"
+              >
+                📥 Export CSV
+              </button>
+              <button
+                onClick={handleLogout}
+                className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors font-semibold shadow-md"
+              >
+                🚪 Logout
+              </button>
+            </div>
+          </div>
+        </div>
 
-          {/* Table */}
+        {/* Summary Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+          <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-blue-500">
+            <h3 className="text-sm font-medium text-gray-600 mb-1">Total Interests Submitted</h3>
+            <p className="text-3xl font-bold text-blue-600">{stats.totalRSVPs}</p>
+          </div>
+          <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-green-500">
+            <h3 className="text-sm font-medium text-gray-600 mb-1">Attending In Person</h3>
+            <p className="text-3xl font-bold text-green-600">{stats.attendingInPerson}</p>
+          </div>
+          <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-purple-500">
+            <h3 className="text-sm font-medium text-gray-600 mb-1">Total Guests In Person</h3>
+            <p className="text-3xl font-bold text-purple-600">{stats.totalGuests}</p>
+          </div>
+          <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-indigo-500">
+            <h3 className="text-sm font-medium text-gray-600 mb-1">WhatsApp Updates</h3>
+            <p className="text-3xl font-bold text-indigo-600">{stats.whatsappUpdates}</p>
+          </div>
+          <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-orange-500">
+            <h3 className="text-sm font-medium text-gray-600 mb-1">Want to Stay Updated</h3>
+            <p className="text-3xl font-bold text-orange-600">{stats.notAttending}</p>
+          </div>
+        </div>
+
+        {/* Interested In Breakdown */}
+        {Object.keys(interestedInStats).length > 0 && (
+          <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Interest Breakdown</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {Object.entries(interestedInStats).map(([key, count]) => (
+                <div key={key} className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <p className="text-sm font-medium text-blue-900">{formatInterestLabel(key)}</p>
+                  <p className="text-2xl font-bold text-blue-600 mt-1">{count}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* RSVP Table */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th
-                    onClick={() => handleSort('id')}
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  >
-                    ID {sortBy === 'id' && (sortOrder === 'asc' ? '↑' : '↓')}
+                  <th className="px-4 py-3 text-left">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.length === rsvps.length && rsvps.length > 0}
+                      onChange={handleSelectAll}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+                    />
                   </th>
                   <th
                     onClick={() => handleSort('full_name')}
@@ -254,79 +407,88 @@ export default function AdminPage() {
                     onClick={() => handleSort('rsvp_status')}
                     className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   >
-                    Status {sortBy === 'rsvp_status' && (sortOrder === 'asc' ? '↑' : '↓')}
+                    Attending {sortBy === 'rsvp_status' && (sortOrder === 'asc' ? '↑' : '↓')}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Profession/Org
+                    Excited About / Interested In
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Interests
-                  </th>
-                  <th
-                    onClick={() => handleSort('referral_source')}
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  >
-                    Referral {sortBy === 'referral_source' && (sortOrder === 'asc' ? '↑' : '↓')}
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Updates
+                    WhatsApp
                   </th>
                   <th
                     onClick={() => handleSort('created_at')}
                     className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   >
-                    Created {sortBy === 'created_at' && (sortOrder === 'asc' ? '↑' : '↓')}
+                    Submitted {sortBy === 'created_at' && (sortOrder === 'asc' ? '↑' : '↓')}
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {rsvps.map((rsvp) => (
-                  <tr key={rsvp.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{rsvp.id}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <tr key={rsvp.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(rsvp.id)}
+                        onChange={() => handleSelectRow(rsvp.id)}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+                      />
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {rsvp.full_name}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{rsvp.email}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-4 py-4 text-sm text-gray-600">
+                      {rsvp.email}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
                       {rsvp.phone_number || '-'}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{rsvp.number_of_guests}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-center font-semibold text-gray-900">
+                      {rsvp.number_of_guests}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
                       <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
                           rsvp.rsvp_status === 'Yes'
                             ? 'bg-green-100 text-green-800'
                             : rsvp.rsvp_status === 'No'
-                            ? 'bg-red-100 text-red-800'
+                            ? 'bg-orange-100 text-orange-800'
                             : 'bg-yellow-100 text-yellow-800'
                         }`}
                       >
-                        {rsvp.rsvp_status}
+                        {rsvp.rsvp_status === 'Yes' ? '✓ Yes, In Person' : '✉️ Stay Updated'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-900 max-w-xs truncate">
-                      {rsvp.profession_organization || '-'}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-900">
-                      <div className="flex flex-wrap gap-1">
+                    <td className="px-4 py-4 text-sm">
+                      <div className="flex flex-wrap gap-1 max-w-xs">
                         {rsvp.interest_types?.map((type, idx) => (
                           <span
                             key={idx}
-                            className="inline-flex px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded"
+                            className="inline-flex px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-md font-medium"
                           >
-                            {type}
+                            {formatInterestLabel(type)}
                           </span>
                         ))}
+                        {(!rsvp.interest_types || rsvp.interest_types.length === 0) && (
+                          <span className="text-gray-400">-</span>
+                        )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                      {rsvp.referral_source || '-'}
+                    <td className="px-4 py-4 whitespace-nowrap text-center text-sm">
+                      {rsvp.receive_updates ? (
+                        <span className="text-green-600 font-bold text-lg">✓</span>
+                      ) : (
+                        <span className="text-gray-300">-</span>
+                      )}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                      {rsvp.receive_updates ? '✓' : '-'}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(rsvp.created_at).toLocaleDateString()}
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {new Date(rsvp.created_at).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
                     </td>
                   </tr>
                 ))}
@@ -334,11 +496,17 @@ export default function AdminPage() {
             </table>
 
             {rsvps.length === 0 && !loading && (
-              <div className="text-center py-8 text-gray-500">No RSVPs yet.</div>
+              <div className="text-center py-12 text-gray-500">
+                <p className="text-lg">No RSVPs yet.</p>
+                <p className="text-sm mt-2">Submissions will appear here once people start RSVPing.</p>
+              </div>
             )}
 
             {loading && (
-              <div className="text-center py-8 text-gray-500">Loading...</div>
+              <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p className="text-gray-500 mt-2">Loading...</p>
+              </div>
             )}
           </div>
         </div>

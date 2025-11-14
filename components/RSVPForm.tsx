@@ -10,21 +10,27 @@ export default function RSVPForm() {
     email: '',
     phone_number: '',
     number_of_guests: 1,
-    rsvp_status: 'Yes',
-    message: '',
-    profession_organization: '',
-    interest_types: [] as string[],
-    referral_source: 'Friend' as 'Friend' | 'Social' | 'Invite',
-    receive_updates: false,
+    excited_about: '',
+    interested_in: [] as string[],
+    receive_whatsapp_updates: false,
+    will_attend_event: '',
   });
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string; referralId?: string } | null>(null);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
+
+    // Validate full name has at least first and last name
+    const nameParts = formData.full_name.trim().split(/\s+/);
+    if (nameParts.length < 2) {
+      setMessage({ type: 'error', text: 'Please enter your full name (first and last name)' });
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch('/api/rsvp', {
@@ -32,17 +38,28 @@ export default function RSVPForm() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          rsvp_status: formData.will_attend_event === 'yes_attend_in_person' ? 'Yes' : 'No',
+          interest_types: [...formData.interested_in, ...(formData.excited_about ? [formData.excited_about] : [])],
+          referral_source: 'Invite',
+          receive_updates: formData.receive_whatsapp_updates,
+          donation_intent: [],
+          donation_value: null,
+          donation_custom: null,
+          message: formData.will_attend_event === 'no_but_stay_updated' ? 'Cannot attend but wants updates about future events' : '',
+        }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
         // Redirect to thank-you page with query parameters
+        const actualStatus = formData.will_attend_event === 'yes_attend_in_person' ? 'Yes' : 'No';
         const params = new URLSearchParams({
           name: data.full_name || formData.full_name,
           referralId: data.referral_id || '',
-          status: data.rsvp_status || formData.rsvp_status,
+          status: actualStatus,
         });
         router.push(`/thank-you?${params.toString()}`);
       } else {
@@ -56,55 +73,58 @@ export default function RSVPForm() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === 'number_of_guests' ? parseInt(value) || 1 : value,
-    }));
-  };
+    const { name, value, type } = e.target;
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, checked } = e.target;
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
 
-    if (name === 'interest_types') {
+      if (name === 'interested_in') {
+        // Handle multi-select checkboxes
+        setFormData((prev) => ({
+          ...prev,
+          interested_in: checked
+            ? [...prev.interested_in, value]
+            : prev.interested_in.filter((item) => item !== value),
+        }));
+      } else {
+        // Handle single checkbox
+        setFormData((prev) => ({
+          ...prev,
+          [name]: checked,
+        }));
+      }
+    } else {
       setFormData((prev) => ({
         ...prev,
-        interest_types: checked
-          ? [...prev.interest_types, value]
-          : prev.interest_types.filter((type) => type !== value),
-      }));
-    } else if (name === 'receive_updates') {
-      setFormData((prev) => ({
-        ...prev,
-        receive_updates: checked,
+        [name]: name === 'number_of_guests' ? parseInt(value) || 1 : value,
       }));
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Full Name */}
-        <div>
-          <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 mb-2">
-            Full Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="full_name"
-            name="full_name"
-            required
-            value={formData.full_name}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Enter your full name"
-          />
-        </div>
+    <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Full Name */}
+      <div>
+        <label htmlFor="full_name" className="block text-sm font-semibold text-gray-900 mb-2">
+          Full Name
+        </label>
+        <input
+          type="text"
+          id="full_name"
+          name="full_name"
+          required
+          value={formData.full_name}
+          onChange={handleChange}
+          className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+          placeholder="First and Last Name"
+        />
+      </div>
 
-        {/* Email */}
+      {/* Email and Phone in Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-            Email Address <span className="text-red-500">*</span>
+          <label htmlFor="email" className="block text-sm font-semibold text-gray-900 mb-2">
+            Email Address
           </label>
           <input
             type="email"
@@ -113,14 +133,13 @@ export default function RSVPForm() {
             required
             value={formData.email}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="your.email@example.com"
+            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+            placeholder="Email Address"
           />
         </div>
 
-        {/* Phone Number */}
         <div>
-          <label htmlFor="phone_number" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="phone_number" className="block text-sm font-semibold text-gray-900 mb-2">
             Phone Number
           </label>
           <input
@@ -129,171 +148,243 @@ export default function RSVPForm() {
             name="phone_number"
             value={formData.phone_number}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="+1 (555) 123-4567"
+            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+            placeholder="Phone Number"
           />
         </div>
+      </div>
 
-        {/* Number of Guests */}
-        <div>
-          <label htmlFor="number_of_guests" className="block text-sm font-medium text-gray-700 mb-2">
-            Number of Guests <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="number"
-            id="number_of_guests"
-            name="number_of_guests"
-            required
-            min="1"
-            max="10"
-            value={formData.number_of_guests}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
+      {/* Number of Guests */}
+      <div>
+        <label htmlFor="number_of_guests" className="block text-sm font-semibold text-gray-900 mb-2">
+          Number of Guests (including you)
+        </label>
+        <select
+          id="number_of_guests"
+          name="number_of_guests"
+          required
+          value={formData.number_of_guests}
+          onChange={handleChange}
+          className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+        >
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+            <option key={num} value={num}>
+              {num}
+            </option>
+          ))}
+        </select>
+      </div>
 
-        {/* RSVP Status */}
-        <div>
-          <label htmlFor="rsvp_status" className="block text-sm font-medium text-gray-700 mb-2">
-            RSVP Status <span className="text-red-500">*</span>
-          </label>
-          <select
-            id="rsvp_status"
-            name="rsvp_status"
-            required
-            value={formData.rsvp_status}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="Yes">Yes, I will attend</option>
-            <option value="No">No, I cannot attend</option>
-            <option value="Maybe">Maybe</option>
-          </select>
-        </div>
-
-        {/* Message */}
-        <div>
-          <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-            Message (Optional)
-          </label>
-          <textarea
-            id="message"
-            name="message"
-            rows={4}
-            value={formData.message}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Any special requests or dietary restrictions?"
-          />
-        </div>
-
-        {/* Profession / Organization */}
-        <div>
-          <label htmlFor="profession_organization" className="block text-sm font-medium text-gray-700 mb-2">
-            Profession / Organization <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="profession_organization"
-            name="profession_organization"
-            required
-            value={formData.profession_organization}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="e.g., Software Engineer at Acme Corp"
-          />
-        </div>
-
-        {/* Interest Types */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Interest Type <span className="text-red-500">*</span>
-          </label>
-          <div className="space-y-2">
-            {['Volunteer', 'Donate', 'Outreach', 'Awareness'].map((type) => (
-              <label key={type} className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="interest_types"
-                  value={type}
-                  checked={formData.interest_types.includes(type)}
-                  onChange={handleCheckboxChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <span className="ml-2 text-sm text-gray-700">{type}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Referral Source */}
-        <div>
-          <label htmlFor="referral_source" className="block text-sm font-medium text-gray-700 mb-2">
-            How did you hear about us? <span className="text-red-500">*</span>
-          </label>
-          <select
-            id="referral_source"
-            name="referral_source"
-            required
-            value={formData.referral_source}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="Friend">Friend</option>
-            <option value="Social">Social Media</option>
-            <option value="Invite">Direct Invite</option>
-          </select>
-        </div>
-
-        {/* Receive Updates */}
-        <div>
-          <label className="flex items-center">
+      {/* I'm Excited the Most To */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-900 mb-3">
+          I&apos;m Excited the Most To:
+        </label>
+        <div className="space-y-2.5">
+          <label className="flex items-start">
             <input
-              type="checkbox"
-              name="receive_updates"
-              checked={formData.receive_updates}
-              onChange={handleCheckboxChange}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              type="radio"
+              name="excited_about"
+              value="learn_about_impact"
+              checked={formData.excited_about === 'learn_about_impact'}
+              onChange={handleChange}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-0.5"
             />
-            <span className="ml-2 text-sm text-gray-700">
-              I&apos;d like to receive updates about KDSP.
+            <span className="ml-3 text-sm text-gray-700">
+              Learn about KDSP&apos;s mission impact
+            </span>
+          </label>
+
+          <label className="flex items-start">
+            <input
+              type="radio"
+              name="excited_about"
+              value="meet_team"
+              checked={formData.excited_about === 'meet_team'}
+              onChange={handleChange}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-0.5"
+            />
+            <span className="ml-3 text-sm text-gray-700">
+              Meet the team behind the advocates, and supporters
+            </span>
+          </label>
+
+          <label className="flex items-start">
+            <input
+              type="radio"
+              name="excited_about"
+              value="connect_and_help"
+              checked={formData.excited_about === 'connect_and_help'}
+              onChange={handleChange}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-0.5"
+            />
+            <span className="ml-3 text-sm text-gray-700">
+              Connect with local families, advocates, and supporters
+            </span>
+          </label>
+
+          <label className="flex items-start">
+            <input
+              type="radio"
+              name="excited_about"
+              value="explore_volunteer"
+              checked={formData.excited_about === 'explore_volunteer'}
+              onChange={handleChange}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-0.5"
+            />
+            <span className="ml-3 text-sm text-gray-700">
+              Explore how you can help shape Virginia Chapter
             </span>
           </label>
         </div>
+      </div>
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed font-medium"
+      {/* I'm Interested In */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-900 mb-3">
+          I&apos;m Interested In: (select all that applies)
+        </label>
+        <div className="space-y-2.5">
+          <label className="flex items-start">
+            <input
+              type="checkbox"
+              name="interested_in"
+              value="joining_chapter_team"
+              checked={formData.interested_in.includes('joining_chapter_team')}
+              onChange={handleChange}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-0.5"
+            />
+            <span className="ml-3 text-sm text-gray-700">
+              Joining the Virginia Chapter team
+            </span>
+          </label>
+
+          <label className="flex items-start">
+            <input
+              type="checkbox"
+              name="interested_in"
+              value="volunteering_events"
+              checked={formData.interested_in.includes('volunteering_events')}
+              onChange={handleChange}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-0.5"
+            />
+            <span className="ml-3 text-sm text-gray-700">
+              Volunteering for future events
+            </span>
+          </label>
+
+          <label className="flex items-start">
+            <input
+              type="checkbox"
+              name="interested_in"
+              value="donating_sponsoring"
+              checked={formData.interested_in.includes('donating_sponsoring')}
+              onChange={handleChange}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-0.5"
+            />
+            <span className="ml-3 text-sm text-gray-700">
+              Donating or sponsoring
+            </span>
+          </label>
+
+          <label className="flex items-start">
+            <input
+              type="checkbox"
+              name="interested_in"
+              value="attending_future_events"
+              checked={formData.interested_in.includes('attending_future_events')}
+              onChange={handleChange}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-0.5"
+            />
+            <span className="ml-3 text-sm text-gray-700">
+              Attending future events
+            </span>
+          </label>
+        </div>
+      </div>
+
+      {/* WhatsApp Updates */}
+      <div className="space-y-2">
+        <label className="flex items-start">
+          <input
+            type="checkbox"
+            name="receive_whatsapp_updates"
+            checked={formData.receive_whatsapp_updates}
+            onChange={handleChange}
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-0.5"
+          />
+          <span className="ml-3 text-sm text-gray-700">
+            Yes, I&apos;d like to receive updates and event reminders via Whatsapp.
+          </span>
+        </label>
+
+        <a
+          href="https://chat.whatsapp.com/your-channel-link"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block ml-7 text-sm text-blue-600 hover:text-blue-700 font-medium"
         >
-          {loading ? 'Submitting...' : 'Submit RSVP'}
-        </button>
+          Join Our WhatsApp Updates Channel
+        </a>
+      </div>
 
-        {/* Message Display */}
-        {message && (
-          <div
-            className={`p-4 rounded-md ${
-              message.type === 'success'
-                ? 'bg-green-50 text-green-800 border border-green-200'
-                : 'bg-red-50 text-red-800 border border-red-200'
-            }`}
-          >
-            <p className="font-medium">{message.text}</p>
-            {message.type === 'success' && message.referralId && (
-              <div className="mt-3 pt-3 border-t border-green-300">
-                <p className="text-sm font-semibold mb-1">Your Referral ID:</p>
-                <p className="text-lg font-mono bg-white px-3 py-2 rounded border border-green-300 inline-block">
-                  {message.referralId}
-                </p>
-                <p className="text-xs mt-2 text-green-700">
-                  Share this ID with friends to track your referrals!
-                </p>
-              </div>
-            )}
-          </div>
-        )}
-      </form>
-    </div>
+      {/* Will you be attending */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-900 mb-3">
+          Will you be attending the January 18 event?
+        </label>
+        <div className="space-y-2.5">
+          <label className="flex items-start">
+            <input
+              type="radio"
+              name="will_attend_event"
+              value="yes_attend_in_person"
+              checked={formData.will_attend_event === 'yes_attend_in_person'}
+              onChange={handleChange}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-0.5"
+            />
+            <span className="ml-3 text-sm text-gray-700">
+              Yes, I&apos;ll attend in person
+            </span>
+          </label>
+
+          <label className="flex items-start">
+            <input
+              type="radio"
+              name="will_attend_event"
+              value="no_but_stay_updated"
+              checked={formData.will_attend_event === 'no_but_stay_updated'}
+              onChange={handleChange}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-0.5"
+            />
+            <span className="ml-3 text-sm text-gray-700">
+              No, I can&apos;t attend but would like to stay updated about future events
+            </span>
+          </label>
+        </div>
+      </div>
+
+      {/* Submit Button */}
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed font-semibold text-base shadow-md"
+      >
+        {loading ? 'Submitting...' : 'Share My Interest'}
+      </button>
+
+      {/* Message Display */}
+      {message && (
+        <div
+          className={`p-4 rounded-md ${
+            message.type === 'success'
+              ? 'bg-green-50 text-green-800 border border-green-200'
+              : 'bg-red-50 text-red-800 border border-red-200'
+          }`}
+        >
+          <p className="font-medium">{message.text}</p>
+        </div>
+      )}
+    </form>
   );
 }

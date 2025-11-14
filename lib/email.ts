@@ -71,14 +71,14 @@ export function generateConfirmationEmail(
   rsvpData: RSVPData,
   referralId: string
 ): { html: string; text: string; subject: string } {
-  const { full_name, rsvp_status, number_of_guests, profession_organization, interest_types } = rsvpData;
+  const { full_name, rsvp_status, number_of_guests, profession_organization, interest_types, donation_intent, donation_value, donation_custom } = rsvpData;
 
   const subject =
     rsvp_status === 'Yes'
-      ? `RSVP Confirmed: KDSP Annual Gala - December 14, 2025`
+      ? `RSVP Confirmed: KDSP Virginia Chapter Launch - January 18, 2026`
       : rsvp_status === 'Maybe'
-      ? `RSVP Received: KDSP Annual Gala - December 14, 2025`
-      : `Thank You for Your Response - KDSP Annual Gala`;
+      ? `RSVP Received: KDSP Virginia Chapter Launch - January 18, 2026`
+      : `Thank You for Your Interest - KDSP Virginia Chapter`;
 
   const html = `
 <!DOCTYPE html>
@@ -97,8 +97,8 @@ export function generateConfirmationEmail(
           <!-- Header -->
           <tr>
             <td style="background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); padding: 40px 30px; text-align: center;">
-              <h1 style="color: #ffffff; margin: 0; font-size: 28px;">KDSP Events</h1>
-              <p style="color: #e0e7ff; margin: 10px 0 0 0; font-size: 16px;">Annual Gala Celebration</p>
+              <h1 style="color: #ffffff; margin: 0; font-size: 28px;">KDSP Virginia Chapter</h1>
+              <p style="color: #e0e7ff; margin: 10px 0 0 0; font-size: 16px;">Supporting Children on the Autism Spectrum</p>
             </td>
           </tr>
 
@@ -112,13 +112,14 @@ export function generateConfirmationEmail(
               <p style="color: #4b5563; margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">
                 ${
                   rsvp_status === 'Yes'
-                    ? `We're thrilled to confirm your attendance at the KDSP Annual Gala Celebration! This promises to be an unforgettable evening.`
+                    ? `We're thrilled to confirm your attendance at the KDSP Virginia Chapter Launch event! Join us for an inspiring evening to learn about KDSP's work supporting children on the autism spectrum and their families.`
                     : rsvp_status === 'Maybe'
-                    ? `Thank you for your response. We've received your RSVP and hope you'll be able to join us for the KDSP Annual Gala Celebration.`
-                    : `Thank you for letting us know you won't be able to attend. We'll miss you at the event!`
+                    ? `Thank you for your response. We've received your interest and hope you'll be able to join us for the KDSP Virginia Chapter Launch event.`
+                    : `Thank you for your interest in KDSP Virginia Chapter. We'll keep you updated about our work and future events!`
                 }
               </p>
 
+              ${rsvp_status === 'Yes' ? `
               <!-- Event Details Box -->
               <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 4px; margin: 30px 0;">
                 <tr>
@@ -127,45 +128,42 @@ export function generateConfirmationEmail(
                     <table width="100%" cellpadding="5" cellspacing="0">
                       <tr>
                         <td style="color: #1f2937; font-weight: 600; width: 120px;">Event:</td>
-                        <td style="color: #4b5563;">Annual Gala Celebration</td>
+                        <td style="color: #4b5563;">KDSP Virginia Chapter Launch</td>
                       </tr>
                       <tr>
                         <td style="color: #1f2937; font-weight: 600;">Date:</td>
-                        <td style="color: #4b5563;">Saturday, December 14, 2025</td>
+                        <td style="color: #4b5563;">Sunday, January 18, 2026</td>
                       </tr>
                       <tr>
                         <td style="color: #1f2937; font-weight: 600;">Time:</td>
-                        <td style="color: #4b5563;">6:00 PM - 11:00 PM</td>
+                        <td style="color: #4b5563;">6:00 PM - 9:00 PM</td>
                       </tr>
                       <tr>
                         <td style="color: #1f2937; font-weight: 600;">Venue:</td>
-                        <td style="color: #4b5563;">Grand Ballroom, Convention Center</td>
+                        <td style="color: #4b5563;">To Be Announced (Northern Virginia area)</td>
                       </tr>
-                      ${
-                        rsvp_status === 'Yes'
-                          ? `<tr>
+                      <tr>
                         <td style="color: #1f2937; font-weight: 600;">Guests:</td>
                         <td style="color: #4b5563;">${number_of_guests}</td>
-                      </tr>`
-                          : ''
-                      }
+                      </tr>
                     </table>
                   </td>
                 </tr>
               </table>
 
-              <!-- Referral ID -->
+              <!-- Confirmation ID -->
               <table width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #f3e8ff 0%, #fce7f3 100%); border-radius: 4px; margin: 20px 0;">
                 <tr>
                   <td style="padding: 20px;">
-                    <h3 style="color: #7c3aed; margin: 0 0 10px 0; font-size: 18px;">Your Referral ID</h3>
-                    <p style="color: #6b21a8; margin: 0 0 10px 0; font-size: 14px;">Share this with friends to track your referrals!</p>
+                    <h3 style="color: #7c3aed; margin: 0 0 10px 0; font-size: 18px;">Your Confirmation ID</h3>
+                    <p style="color: #6b21a8; margin: 0 0 10px 0; font-size: 14px;">Please save this for your records.</p>
                     <div style="background-color: #ffffff; border: 2px solid #c084fc; border-radius: 4px; padding: 12px; text-align: center; font-family: monospace; font-size: 20px; font-weight: 700; color: #7c3aed;">
                       ${referralId}
                     </div>
                   </td>
                 </tr>
               </table>
+              ` : ''}
 
               ${
                 rsvp_status === 'Yes'
@@ -173,10 +171,10 @@ export function generateConfirmationEmail(
               <!-- Important Information -->
               <h3 style="color: #1f2937; margin: 30px 0 15px 0; font-size: 18px;">Important Information</h3>
               <ul style="color: #4b5563; margin: 0; padding-left: 20px; line-height: 1.8;">
-                <li>Dress code: Formal attire</li>
-                <li>Complimentary valet parking available</li>
-                <li>Dinner and drinks will be provided</li>
-                <li>Please arrive by 6:15 PM for check-in</li>
+                <li>Event details including venue location will be sent via email closer to the date</li>
+                <li>Refreshments will be provided</li>
+                <li>This is an introductory evening to learn about KDSP's mission and the Virginia Chapter</li>
+                <li>Opportunities to get involved and support the cause will be discussed</li>
               </ul>
               `
                   : ''
@@ -189,12 +187,13 @@ export function generateConfirmationEmail(
                   rsvp_status === 'Yes'
                     ? `
                 <li>Add the event to your calendar</li>
-                <li>Share your referral ID with friends and family</li>
-                <li>Follow us on social media for updates</li>
+                <li>Save your confirmation ID for reference</li>
+                <li>We'll send venue details closer to the date</li>
+                <li>Visit www.kdsp.org.pk to learn more about KDSP's work</li>
                 `
                     : `
-                <li>We'll keep you updated on KDSP activities</li>
-                <li>Follow us on social media</li>
+                <li>We'll keep you updated on KDSP Virginia Chapter activities</li>
+                <li>Visit www.kdsp.org.pk to learn more about our mission</li>
                 `
                 }
               </ul>
@@ -206,10 +205,7 @@ export function generateConfirmationEmail(
             <td style="background-color: #1f2937; padding: 30px; text-align: center;">
               <p style="color: #9ca3af; margin: 0 0 10px 0; font-size: 14px;">
                 Questions? Contact us at
-                <a href="mailto:events@kdsp.com" style="color: #60a5fa; text-decoration: none;">events@kdsp.com</a>
-              </p>
-              <p style="color: #6b7280; margin: 0; font-size: 12px;">
-                &copy; 2025 KDSP Events. All rights reserved.
+                <a href="mailto:kdspdmv@gmail.com" style="color: #60a5fa; text-decoration: none;">kdspdmv@gmail.com</a>
               </p>
             </td>
           </tr>
@@ -222,44 +218,54 @@ export function generateConfirmationEmail(
 `;
 
   const text = `
-KDSP RSVP Confirmation
+KDSP Virginia Chapter - RSVP Confirmation
 
 ${rsvp_status === 'Yes' ? `Thank You, ${full_name}!` : `Hello ${full_name},`}
 
 ${
   rsvp_status === 'Yes'
-    ? `We're thrilled to confirm your attendance at the KDSP Annual Gala Celebration!`
+    ? `We're thrilled to confirm your attendance at the KDSP Virginia Chapter Launch event! Join us for an inspiring evening to learn about KDSP's work supporting children on the autism spectrum and their families.`
     : rsvp_status === 'Maybe'
-    ? `Thank you for your response. We've received your RSVP and hope you'll be able to join us.`
-    : `Thank you for letting us know you won't be able to attend. We'll miss you!`
+    ? `Thank you for your response. We've received your interest and hope you'll be able to join us for the KDSP Virginia Chapter Launch event.`
+    : `Thank you for your interest in KDSP Virginia Chapter. We'll keep you updated about our work and future events!`
 }
 
+${rsvp_status === 'Yes' ? `
 EVENT DETAILS
-Event: Annual Gala Celebration
-Date: Saturday, December 14, 2025
-Time: 6:00 PM - 11:00 PM
-Venue: Grand Ballroom, Convention Center
-${rsvp_status === 'Yes' ? `Number of Guests: ${number_of_guests}` : ''}
+Event: KDSP Virginia Chapter Launch
+Date: Sunday, January 18, 2026
+Time: 6:00 PM - 9:00 PM
+Venue: To Be Announced (Northern Virginia area)
+Number of Guests: ${number_of_guests}
 
-YOUR REFERRAL ID
+YOUR CONFIRMATION ID
 ${referralId}
-Share this with friends to track your referrals!
+Please save this for your records.
+` : ''}
 
 ${
   rsvp_status === 'Yes'
     ? `
 IMPORTANT INFORMATION
-- Dress code: Formal attire
-- Complimentary valet parking available
-- Dinner and drinks will be provided
-- Please arrive by 6:15 PM for check-in
+- Event details including venue location will be sent via email closer to the date
+- Refreshments will be provided
+- This is an introductory evening to learn about KDSP's mission and the Virginia Chapter
+- Opportunities to get involved and support the cause will be discussed
+
+WHAT'S NEXT?
+- Add the event to your calendar
+- Save your confirmation ID for reference
+- We'll send venue details closer to the date
+- Visit www.kdsp.org.pk to learn more about KDSP's work
 `
-    : ''
+    : `
+WHAT'S NEXT?
+- We'll keep you updated on KDSP Virginia Chapter activities
+- Visit www.kdsp.org.pk to learn more about our mission
+`
 }
 
-Questions? Contact us at events@kdsp.com
-
-© 2025 KDSP Events. All rights reserved.
+Questions? Contact us at kdspdmv@gmail.com
 `;
 
   return { html, text, subject };
