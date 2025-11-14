@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import { RSVPData } from './db';
 
 interface EmailOptions {
@@ -10,6 +11,21 @@ interface EmailOptions {
 
 // Create reusable transporter
 let transporter: nodemailer.Transporter | null = null;
+let resend: Resend | null = null;
+
+function getResend() {
+  if (resend) {
+    return resend;
+  }
+
+  const apiKey = process.env.RESEND_API_KEY;
+  if (apiKey) {
+    resend = new Resend(apiKey);
+    return resend;
+  }
+
+  return null;
+}
 
 function getTransporter() {
   if (transporter) {
@@ -24,7 +40,7 @@ function getTransporter() {
 
   if (!emailUser || !emailPassword) {
     console.warn(
-      'Email credentials not configured. Set EMAIL_USER and EMAIL_PASSWORD in .env to enable email sending.'
+      'SMTP credentials not configured. Set EMAIL_USER and EMAIL_PASSWORD in .env to enable SMTP sending.'
     );
     return null;
   }
@@ -43,10 +59,35 @@ function getTransporter() {
 }
 
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
+  // Try Resend first (preferred for cloud deployments)
+  const resendClient = getResend();
+  if (resendClient) {
+    try {
+      const { data, error } = await resendClient.emails.send({
+        from: 'KDSP Events <onboarding@resend.dev>',
+        to: options.to,
+        subject: options.subject,
+        html: options.html,
+      });
+
+      if (error) {
+        console.error('Resend error:', error);
+        // Fall back to SMTP
+      } else {
+        console.log('Email sent via Resend:', data?.id);
+        return true;
+      }
+    } catch (error) {
+      console.error('Error sending email via Resend:', error);
+      // Fall back to SMTP
+    }
+  }
+
+  // Fall back to SMTP (Gmail)
   const transporter = getTransporter();
 
   if (!transporter) {
-    console.log('Email not sent - transporter not configured');
+    console.log('Email not sent - no email service configured (tried Resend and SMTP)');
     return false;
   }
 
@@ -59,10 +100,10 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
       html: options.html,
     });
 
-    console.log('Email sent:', info.messageId);
+    console.log('Email sent via SMTP:', info.messageId);
     return true;
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('Error sending email via SMTP:', error);
     return false;
   }
 }
