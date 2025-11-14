@@ -3,6 +3,7 @@ import { sendEmail } from '@/lib/email';
 
 export async function GET() {
   try {
+    console.log('Test email endpoint called');
     // Check if email credentials are configured
     const emailUser = process.env.EMAIL_USER;
     const emailPassword = process.env.EMAIL_PASSWORD;
