@@ -1,8 +1,16 @@
 import Database from 'better-sqlite3';
 import path from 'path';
+import fs from 'fs';
 
-const dbPath = path.join(process.cwd(), 'rsvp.db');
+// Use persistent volume in production (Railway), local directory in development
+const dataDir = process.env.NODE_ENV === 'production' && fs.existsSync('/app/data')
+  ? '/app/data'
+  : process.cwd();
+
+const dbPath = path.join(dataDir, 'rsvp.db');
 const db = new Database(dbPath);
+
+console.log(`Database initialized at: ${dbPath}`);
 
 // Create RSVP table if it doesn't exist
 db.exec(`
