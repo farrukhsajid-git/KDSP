@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch all RSVPs
-    const rsvps = getAllRSVPs('created_at', 'desc');
+    const rsvps = await getAllRSVPs('created_at', 'desc');
 
     // Initialize statistics
     const intentCounts: Record<string, number> = {

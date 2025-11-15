@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const sortOrder = order === 'asc' ? 'asc' : 'desc';
 
     // Fetch all RSVPs with sorting
-    const rsvps = getAllRSVPs(sortBy, sortOrder);
+    const rsvps = await getAllRSVPs(sortBy, sortOrder);
 
     // Parse JSON strings back to arrays for the response
     const rsvpsWithParsedData = rsvps.map((rsvp) => ({
