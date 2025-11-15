@@ -65,7 +65,7 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
     try {
       const { data, error } = await resendClient.emails.send({
         from: 'KDSP Events <noreply@kdspdmv.org>',
-        reply_to: 'kdspdmv@gmail.com',
+        replyTo: 'kdspdmv@gmail.com',
         to: options.to,
         subject: options.subject,
         html: options.html,
