@@ -410,7 +410,10 @@ export default function AdminPage() {
                     Attending {sortBy === 'rsvp_status' && (sortOrder === 'asc' ? '↑' : '↓')}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Excited About / Interested In
+                    Excited About
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Interested In
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     WhatsApp
@@ -461,17 +464,40 @@ export default function AdminPage() {
                     </td>
                     <td className="px-4 py-4 text-sm">
                       <div className="flex flex-wrap gap-1 max-w-xs">
-                        {rsvp.interest_types?.map((type, idx) => (
-                          <span
-                            key={idx}
-                            className="inline-flex px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-md font-medium"
-                          >
-                            {formatInterestLabel(type)}
-                          </span>
-                        ))}
-                        {(!rsvp.interest_types || rsvp.interest_types.length === 0) && (
-                          <span className="text-gray-400">-</span>
-                        )}
+                        {rsvp.interest_types
+                          ?.filter((type: string) =>
+                            ['learn_about_impact', 'meet_team', 'connect_and_help', 'explore_volunteer'].includes(type)
+                          )
+                          .map((type, idx) => (
+                            <span
+                              key={idx}
+                              className="inline-flex px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-md font-medium"
+                            >
+                              {formatInterestLabel(type)}
+                            </span>
+                          ))}
+                        {!rsvp.interest_types?.some((type: string) =>
+                          ['learn_about_impact', 'meet_team', 'connect_and_help', 'explore_volunteer'].includes(type)
+                        ) && <span className="text-gray-400">-</span>}
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 text-sm">
+                      <div className="flex flex-wrap gap-1 max-w-xs">
+                        {rsvp.interest_types
+                          ?.filter((type: string) =>
+                            ['joining_chapter_team', 'volunteering_events', 'donating_sponsoring', 'attending_future_events'].includes(type)
+                          )
+                          .map((type, idx) => (
+                            <span
+                              key={idx}
+                              className="inline-flex px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-md font-medium"
+                            >
+                              {formatInterestLabel(type)}
+                            </span>
+                          ))}
+                        {!rsvp.interest_types?.some((type: string) =>
+                          ['joining_chapter_team', 'volunteering_events', 'donating_sponsoring', 'attending_future_events'].includes(type)
+                        ) && <span className="text-gray-400">-</span>}
                       </div>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-center text-sm">

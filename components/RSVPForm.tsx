@@ -32,6 +32,34 @@ export default function RSVPForm() {
       return;
     }
 
+    // Validate phone number
+    if (!formData.phone_number || formData.phone_number.trim() === '') {
+      setMessage({ type: 'error', text: 'Please enter your phone number' });
+      setLoading(false);
+      return;
+    }
+
+    // Validate "I'm Excited the Most To" field
+    if (!formData.excited_about) {
+      setMessage({ type: 'error', text: 'Please select what you\'re most excited about' });
+      setLoading(false);
+      return;
+    }
+
+    // Validate "I'm Interested In" field
+    if (formData.interested_in.length === 0) {
+      setMessage({ type: 'error', text: 'Please select at least one interest' });
+      setLoading(false);
+      return;
+    }
+
+    // Validate "Will you be attending" field
+    if (!formData.will_attend_event) {
+      setMessage({ type: 'error', text: 'Please indicate if you will be attending the event' });
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch('/api/rsvp', {
         method: 'POST',
@@ -106,7 +134,7 @@ export default function RSVPForm() {
       {/* Full Name */}
       <div>
         <label htmlFor="full_name" className="block text-sm font-semibold text-gray-900 mb-2">
-          Full Name
+          Full Name <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
@@ -124,7 +152,7 @@ export default function RSVPForm() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label htmlFor="email" className="block text-sm font-semibold text-gray-900 mb-2">
-            Email Address
+            Email Address <span className="text-red-500">*</span>
           </label>
           <input
             type="email"
@@ -140,12 +168,13 @@ export default function RSVPForm() {
 
         <div>
           <label htmlFor="phone_number" className="block text-sm font-semibold text-gray-900 mb-2">
-            Phone Number
+            Phone Number <span className="text-red-500">*</span>
           </label>
           <input
             type="tel"
             id="phone_number"
             name="phone_number"
+            required
             value={formData.phone_number}
             onChange={handleChange}
             className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
@@ -178,7 +207,7 @@ export default function RSVPForm() {
       {/* I'm Excited the Most To */}
       <div>
         <label className="block text-sm font-semibold text-gray-900 mb-3">
-          I&apos;m Excited the Most To:
+          I&apos;m Excited the Most To: <span className="text-red-500">*</span>
         </label>
         <div className="space-y-2.5">
           <label className="flex items-start">
@@ -242,7 +271,7 @@ export default function RSVPForm() {
       {/* I'm Interested In */}
       <div>
         <label className="block text-sm font-semibold text-gray-900 mb-3">
-          I&apos;m Interested In: (select all that applies)
+          I&apos;m Interested In: (select all that applies) <span className="text-red-500">*</span>
         </label>
         <div className="space-y-2.5">
           <label className="flex items-start">
@@ -331,7 +360,7 @@ export default function RSVPForm() {
       {/* Will you be attending */}
       <div>
         <label className="block text-sm font-semibold text-gray-900 mb-3">
-          Will you be attending the January 18 event?
+          Will you be attending the January 18 event? <span className="text-red-500">*</span>
         </label>
         <div className="space-y-2.5">
           <label className="flex items-start">
