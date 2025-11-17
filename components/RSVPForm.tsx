@@ -333,7 +333,7 @@ export default function RSVPForm() {
       </div>
 
       {/* WhatsApp Updates */}
-      <div className="space-y-2">
+      <div>
         <label className="flex items-start">
           <input
             type="checkbox"
@@ -346,15 +346,6 @@ export default function RSVPForm() {
             Yes, I&apos;d like to receive updates and event reminders via Whatsapp.
           </span>
         </label>
-
-        <a
-          href="https://chat.whatsapp.com/your-channel-link"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block ml-7 text-sm text-blue-600 hover:text-blue-700 font-medium"
-        >
-          Join Our WhatsApp Updates Channel
-        </a>
       </div>
 
       {/* Will you be attending */}
