@@ -93,7 +93,7 @@ export default function Home() {
             />
             <span className="font-semibold">KDSP</span>
             <span>—</span>
-            <span>Empowering Kids on the Spectrum</span>
+            <span>Empowering Children with Down Syndrome</span>
           </div>
           <a
             href="https://www.kdsp.org.pk"
