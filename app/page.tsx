@@ -75,8 +75,8 @@ export default function Home() {
           {/* Description */}
           <p className="text-gray-700 text-center mb-8 leading-relaxed">
             We&apos;re excited to bring KDSP to Virginia! Join us for an introductory evening
-            to learn about KDSP&apos;s inspiring work supporting children on the autism
-            spectrum and their families and how you can help us build a strong Virginia Chapter dedicated to inclusion, education, and empowerment.
+            to learn about KDSP&apos;s inspiring work supporting children with Down syndrome
+            and their families, and discover how you can help us build a strong Virginia Chapter focused on inclusion, education, and empowerment.
           </p>
 
           {/* RSVP Form */}
