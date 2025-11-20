@@ -140,7 +140,7 @@ export function generateConfirmationEmail(
           <tr>
             <td style="background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); padding: 40px 30px; text-align: center;">
               <h1 style="color: #ffffff; margin: 0; font-size: 28px;">KDSP Virginia Chapter</h1>
-              <p style="color: #e0e7ff; margin: 10px 0 0 0; font-size: 16px;">Supporting Children on the Autism Spectrum</p>
+              <p style="color: #e0e7ff; margin: 10px 0 0 0; font-size: 16px;">Supporting Children with Down Syndrome</p>
             </td>
           </tr>
 
@@ -154,7 +154,7 @@ export function generateConfirmationEmail(
               <p style="color: #4b5563; margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">
                 ${
                   rsvp_status === 'Yes'
-                    ? `We're thrilled to confirm your attendance at the KDSP Virginia Chapter Launch event! Join us for an inspiring evening to learn about KDSP's work supporting children on the autism spectrum and their families.`
+                    ? `We're thrilled to confirm your attendance at the KDSP Virginia Chapter Launch event! Join us for an inspiring evening to learn about KDSP's work supporting children with Down syndrome and their families.`
                     : rsvp_status === 'Maybe'
                     ? `Thank you for your response. We've received your interest and hope you'll be able to join us for the KDSP Virginia Chapter Launch event.`
                     : `Thank you for your interest in KDSP Virginia Chapter. We'll keep you updated about our work and future events!`
@@ -266,7 +266,7 @@ ${rsvp_status === 'Yes' ? `Thank You, ${full_name}!` : `Hello ${full_name},`}
 
 ${
   rsvp_status === 'Yes'
-    ? `We're thrilled to confirm your attendance at the KDSP Virginia Chapter Launch event! Join us for an inspiring evening to learn about KDSP's work supporting children on the autism spectrum and their families.`
+    ? `We're thrilled to confirm your attendance at the KDSP Virginia Chapter Launch event! Join us for an inspiring evening to learn about KDSP's work supporting children with Down syndrome and their families.`
     : rsvp_status === 'Maybe'
     ? `Thank you for your response. We've received your interest and hope you'll be able to join us for the KDSP Virginia Chapter Launch event.`
     : `Thank you for your interest in KDSP Virginia Chapter. We'll keep you updated about our work and future events!`
