@@ -85,7 +85,7 @@ function ThankYouContent() {
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Event Details</h3>
               <div className="space-y-2 text-gray-700">
                 <p><span className="font-semibold">Event:</span> KDSP Virginia Chapter Launch</p>
-                <p><span className="font-semibold">Date:</span> Sunday, January 18, 2026</p>
+                <p><span className="font-semibold">Date:</span> Saturday, January 24, 2026</p>
                 <p><span className="font-semibold">Time:</span> To be Announced</p>
                 <p><span className="font-semibold">Venue:</span> To Be Announced</p>
                 <p className="mt-4 text-sm italic">We will be sharing the event details to the email provided in this form</p>

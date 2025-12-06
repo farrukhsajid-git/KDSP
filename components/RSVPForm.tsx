@@ -322,7 +322,7 @@ export default function RSVPForm() {
       {/* Will you be attending */}
       <div>
         <label className="block text-sm font-semibold text-gray-900 mb-3">
-          Will you be attending the January 18 event?
+          Will you be attending the January 24 event?
         </label>
         <div className="space-y-2.5">
           <label className="flex items-start">

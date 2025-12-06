@@ -4,8 +4,8 @@ import { createEvents } from 'ics';
 export async function GET() {
   try {
     // Event details
-    const eventDate = new Date('2026-01-18T18:00:00');
-    const eventEndDate = new Date('2026-01-18T21:00:00');
+    const eventDate = new Date('2026-01-24T18:00:00');
+    const eventEndDate = new Date('2026-01-24T21:00:00');
 
     const event = {
       start: [

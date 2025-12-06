@@ -75,9 +75,9 @@ export function generateConfirmationEmail(
 
   const subject =
     rsvp_status === 'Yes'
-      ? `RSVP Confirmed: KDSP Virginia Chapter Launch - January 18, 2026`
+      ? `RSVP Confirmed: KDSP Virginia Chapter Launch - January 24, 2026`
       : rsvp_status === 'Maybe'
-      ? `RSVP Received: KDSP Virginia Chapter Launch - January 18, 2026`
+      ? `RSVP Received: KDSP Virginia Chapter Launch - January 24, 2026`
       : `Thank You for Your Interest - KDSP Virginia Chapter`;
 
   const html = `
@@ -132,7 +132,7 @@ export function generateConfirmationEmail(
                       </tr>
                       <tr>
                         <td style="color: #1f2937; font-weight: 600;">Date:</td>
-                        <td style="color: #4b5563;">Sunday, January 18, 2026</td>
+                        <td style="color: #4b5563;">Saturday, January 24, 2026</td>
                       </tr>
                       <tr>
                         <td style="color: #1f2937; font-weight: 600;">Time:</td>
@@ -233,7 +233,7 @@ ${
 ${rsvp_status === 'Yes' ? `
 EVENT DETAILS
 Event: KDSP Virginia Chapter Launch
-Date: Sunday, January 18, 2026
+Date: Saturday, January 24, 2026
 Time: 6:00 PM - 9:00 PM
 Venue: To Be Announced (Northern Virginia area)
 Number of Guests: ${number_of_guests}
