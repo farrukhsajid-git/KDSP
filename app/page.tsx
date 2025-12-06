@@ -56,7 +56,7 @@ export default function Home() {
             <h2 className="text-xl font-bold text-gray-900 mb-4">Save the Date</h2>
             <div className="flex items-center justify-center gap-2 mb-3">
               <FaCalendarAlt className="text-blue-500 text-xl" />
-              <span className="text-2xl font-bold text-gray-900">January 18</span>
+              <span className="text-2xl font-bold text-gray-900">January 24</span>
             </div>
             <div className="flex items-start justify-center gap-2 text-gray-600">
               <FaMapMarkerAlt className="text-blue-500 text-lg mt-1 flex-shrink-0" />

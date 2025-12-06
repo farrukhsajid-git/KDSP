@@ -256,7 +256,7 @@ export default function AdminPage() {
         <div className="max-w-md w-full bg-white rounded-xl shadow-2xl p-8">
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">KDSP Admin</h1>
-            <p className="text-gray-600">January 18 Event Dashboard</p>
+            <p className="text-gray-600">January 24 Event Dashboard</p>
           </div>
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
@@ -299,7 +299,7 @@ export default function AdminPage() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">KDSP Admin Dashboard</h1>
-              <p className="text-gray-600 mt-1">Virginia Chapter - January 18 Event</p>
+              <p className="text-gray-600 mt-1">Virginia Chapter - January 24 Event</p>
               {selectedIds.length > 0 && (
                 <p className="text-blue-600 mt-1 text-sm font-medium">
                   {selectedIds.length} record{selectedIds.length !== 1 ? 's' : ''} selected
