@@ -23,7 +23,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete the RSVPs
-    const deletedCount = deleteRSVPs(ids);
+    const deletedCount = await deleteRSVPs(ids);
 
     return NextResponse.json({
       success: true,

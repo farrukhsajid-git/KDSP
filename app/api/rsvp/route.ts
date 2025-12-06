@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Insert into database
-    const result = insertRSVP(rsvpData);
+    const result = await insertRSVP(rsvpData);
 
     // Send confirmation email (async, don't wait for it)
     // This runs in background so user doesn't have to wait

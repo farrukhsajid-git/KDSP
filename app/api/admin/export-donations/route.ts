@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch all RSVPs
-    const rsvps = getAllRSVPs('created_at', 'desc');
+    const rsvps = await getAllRSVPs('created_at', 'desc');
 
     // Convert to CSV
     const csvContent = convertDonationsToCSV(rsvps);

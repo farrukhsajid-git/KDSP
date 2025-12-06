@@ -24,8 +24,8 @@ export async function GET() {
       ] as [number, number, number, number, number],
       title: 'KDSP Virginia Chapter Launch',
       description:
-        'Join us for an introductory evening to learn about KDSP\'s inspiring work supporting children on the autism spectrum and their families. ' +
-        'Help us build a strong Virginia Chapter dedicated to inclusion, education, and empowerment. ' +
+        'Join us for an introductory evening to learn about KDSP\'s inspiring work supporting children with Down syndrome and their families. ' +
+        'Help us build a strong Virginia Chapter focused on inclusion, education, and empowerment. ' +
         'Venue details will be sent via email.',
       location: 'Northern Virginia (Details to be announced)',
       url: 'https://www.kdsp.org.pk',

@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import { RSVPData } from './db';
 
 interface EmailOptions {
@@ -10,6 +11,21 @@ interface EmailOptions {
 
 // Create reusable transporter
 let transporter: nodemailer.Transporter | null = null;
+let resend: Resend | null = null;
+
+function getResend() {
+  if (resend) {
+    return resend;
+  }
+
+  const apiKey = process.env.RESEND_API_KEY;
+  if (apiKey) {
+    resend = new Resend(apiKey);
+    return resend;
+  }
+
+  return null;
+}
 
 function getTransporter() {
   if (transporter) {
@@ -24,7 +40,7 @@ function getTransporter() {
 
   if (!emailUser || !emailPassword) {
     console.warn(
-      'Email credentials not configured. Set EMAIL_USER and EMAIL_PASSWORD in .env to enable email sending.'
+      'SMTP credentials not configured. Set EMAIL_USER and EMAIL_PASSWORD in .env to enable SMTP sending.'
     );
     return null;
   }
@@ -43,10 +59,36 @@ function getTransporter() {
 }
 
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
+  // Try Resend first (preferred for cloud deployments)
+  const resendClient = getResend();
+  if (resendClient) {
+    try {
+      const { data, error } = await resendClient.emails.send({
+        from: 'KDSP Events <noreply@kdspdmv.org>',
+        replyTo: 'kdspdmv@gmail.com',
+        to: options.to,
+        subject: options.subject,
+        html: options.html,
+      });
+
+      if (error) {
+        console.error('Resend error:', error);
+        // Fall back to SMTP
+      } else {
+        console.log('Email sent via Resend:', data?.id);
+        return true;
+      }
+    } catch (error) {
+      console.error('Error sending email via Resend:', error);
+      // Fall back to SMTP
+    }
+  }
+
+  // Fall back to SMTP (Gmail)
   const transporter = getTransporter();
 
   if (!transporter) {
-    console.log('Email not sent - transporter not configured');
+    console.log('Email not sent - no email service configured (tried Resend and SMTP)');
     return false;
   }
 
@@ -59,10 +101,10 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
       html: options.html,
     });
 
-    console.log('Email sent:', info.messageId);
+    console.log('Email sent via SMTP:', info.messageId);
     return true;
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('Error sending email via SMTP:', error);
     return false;
   }
 }
@@ -98,7 +140,7 @@ export function generateConfirmationEmail(
           <tr>
             <td style="background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); padding: 40px 30px; text-align: center;">
               <h1 style="color: #ffffff; margin: 0; font-size: 28px;">KDSP Virginia Chapter</h1>
-              <p style="color: #e0e7ff; margin: 10px 0 0 0; font-size: 16px;">Supporting Children on the Autism Spectrum</p>
+              <p style="color: #e0e7ff; margin: 10px 0 0 0; font-size: 16px;">Supporting Children with Down Syndrome</p>
             </td>
           </tr>
 
@@ -112,7 +154,7 @@ export function generateConfirmationEmail(
               <p style="color: #4b5563; margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">
                 ${
                   rsvp_status === 'Yes'
-                    ? `We're thrilled to confirm your attendance at the KDSP Virginia Chapter Launch event! Join us for an inspiring evening to learn about KDSP's work supporting children on the autism spectrum and their families.`
+                    ? `We're thrilled to confirm your attendance at the KDSP Virginia Chapter Launch event! Join us for an inspiring evening to learn about KDSP's work supporting children with Down syndrome and their families.`
                     : rsvp_status === 'Maybe'
                     ? `Thank you for your response. We've received your interest and hope you'll be able to join us for the KDSP Virginia Chapter Launch event.`
                     : `Thank you for your interest in KDSP Virginia Chapter. We'll keep you updated about our work and future events!`
@@ -224,7 +266,7 @@ ${rsvp_status === 'Yes' ? `Thank You, ${full_name}!` : `Hello ${full_name},`}
 
 ${
   rsvp_status === 'Yes'
-    ? `We're thrilled to confirm your attendance at the KDSP Virginia Chapter Launch event! Join us for an inspiring evening to learn about KDSP's work supporting children on the autism spectrum and their families.`
+    ? `We're thrilled to confirm your attendance at the KDSP Virginia Chapter Launch event! Join us for an inspiring evening to learn about KDSP's work supporting children with Down syndrome and their families.`
     : rsvp_status === 'Maybe'
     ? `Thank you for your response. We've received your interest and hope you'll be able to join us for the KDSP Virginia Chapter Launch event.`
     : `Thank you for your interest in KDSP Virginia Chapter. We'll keep you updated about our work and future events!`

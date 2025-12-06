@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch statistics
-    const stats = getRSVPStats();
+    const stats = await getRSVPStats();
 
     return NextResponse.json(
       {
