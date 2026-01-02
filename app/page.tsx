@@ -66,6 +66,21 @@ export default function Home() {
               </div>
             </div>
           </div>
+
+          {/* WhatsApp Group Button */}
+          <div className="mt-8 text-center">
+            <p className="text-white font-bold mb-1">Join our WhatsApp channel</p>
+            <p className="text-white font-bold text-sm mb-3">Stay updated on event news</p>
+            <a
+              href="https://chat.whatsapp.com/HLyRbVra6OV0ZF74PW5UWh"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors shadow-lg"
+            >
+              <FaWhatsapp className="text-xl" />
+              Join WhatsApp Channel
+            </a>
+          </div>
         </div>
       </section>
 
