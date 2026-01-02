@@ -25,9 +25,8 @@ export async function GET() {
       title: 'KDSP Virginia Chapter Launch',
       description:
         'Join us for an introductory evening to learn about KDSP\'s inspiring work supporting children with Down syndrome and their families. ' +
-        'Help us build a strong Virginia Chapter focused on inclusion, education, and empowerment. ' +
-        'Venue details will be sent via email.',
-      location: 'Northern Virginia (Details to be announced)',
+        'Help us build a strong Virginia Chapter focused on inclusion, education, and empowerment.',
+      location: 'CHA Street Food (Sterling), 45633 Dulles Eastern Plaza #100, Sterling, VA 20166',
       url: 'https://www.kdsp.org.pk',
       status: 'CONFIRMED' as const,
       busyStatus: 'BUSY' as const,

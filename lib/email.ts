@@ -182,7 +182,7 @@ export function generateConfirmationEmail(
                       </tr>
                       <tr>
                         <td style="color: #1f2937; font-weight: 600;">Venue:</td>
-                        <td style="color: #4b5563;">To Be Announced (Northern Virginia area)</td>
+                        <td style="color: #4b5563;">CHA Street Food (Sterling)<br>45633 Dulles Eastern Plaza #100, Sterling, VA 20166</td>
                       </tr>
                       <tr>
                         <td style="color: #1f2937; font-weight: 600;">Guests:</td>
@@ -213,7 +213,6 @@ export function generateConfirmationEmail(
               <!-- Important Information -->
               <h3 style="color: #1f2937; margin: 30px 0 15px 0; font-size: 18px;">Important Information</h3>
               <ul style="color: #4b5563; margin: 0; padding-left: 20px; line-height: 1.8;">
-                <li>Event details including venue location will be sent via email closer to the date</li>
                 <li>Refreshments will be provided</li>
                 <li>This is an introductory evening to learn about KDSP's mission and the Virginia Chapter</li>
                 <li>Opportunities to get involved and support the cause will be discussed</li>
@@ -230,7 +229,6 @@ export function generateConfirmationEmail(
                     ? `
                 <li>Add the event to your calendar</li>
                 <li>Save your confirmation ID for reference</li>
-                <li>We'll send venue details closer to the date</li>
                 <li>Visit www.kdsp.org.pk to learn more about KDSP's work</li>
                 `
                     : `
@@ -277,7 +275,7 @@ EVENT DETAILS
 Event: KDSP Virginia Chapter Launch
 Date: Saturday, January 24, 2026
 Time: 6:00 PM - 9:00 PM
-Venue: To Be Announced (Northern Virginia area)
+Venue: CHA Street Food (Sterling), 45633 Dulles Eastern Plaza #100, Sterling, VA 20166
 Number of Guests: ${number_of_guests}
 
 YOUR CONFIRMATION ID
@@ -289,7 +287,6 @@ ${
   rsvp_status === 'Yes'
     ? `
 IMPORTANT INFORMATION
-- Event details including venue location will be sent via email closer to the date
 - Refreshments will be provided
 - This is an introductory evening to learn about KDSP's mission and the Virginia Chapter
 - Opportunities to get involved and support the cause will be discussed
@@ -297,7 +294,6 @@ IMPORTANT INFORMATION
 WHAT'S NEXT?
 - Add the event to your calendar
 - Save your confirmation ID for reference
-- We'll send venue details closer to the date
 - Visit www.kdsp.org.pk to learn more about KDSP's work
 `
     : `

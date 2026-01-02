@@ -48,12 +48,12 @@ export default function Home() {
           </h1>
           <p className="text-white text-lg mb-8">
             Launching the Virginia Chapter of KDSP<br />
-            <span className="text-sm">(Karwan-e-Dastan Special Persons)</span>
+            <span className="text-sm">(Karachi Down Syndrome Program)</span>
           </p>
 
           {/* Save the Date Card */}
           <div className="bg-white rounded-2xl shadow-xl p-6 max-w-md mx-auto">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Save the Date</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Event Details</h2>
             <div className="flex items-center justify-center gap-2 mb-3">
               <FaCalendarAlt className="text-blue-500 text-xl" />
               <span className="text-2xl font-bold text-gray-900">January 24</span>
@@ -61,8 +61,8 @@ export default function Home() {
             <div className="flex items-start justify-center gap-2 text-gray-600">
               <FaMapMarkerAlt className="text-blue-500 text-lg mt-1 flex-shrink-0" />
               <div className="text-sm">
-                <p className="font-semibold">Location to be announced soon</p>
-                <p>(Northern Virginia area)</p>
+                <p className="font-semibold">CHA Street Food (Sterling)</p>
+                <p>45633 Dulles Eastern Plaza #100, Sterling, VA 20166</p>
               </div>
             </div>
           </div>
