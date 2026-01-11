@@ -61,8 +61,9 @@ export default function Home() {
             <div className="flex items-start justify-center gap-2 text-gray-600">
               <FaMapMarkerAlt className="text-blue-500 text-lg mt-1 flex-shrink-0" />
               <div className="text-sm">
-                <p className="font-semibold">CHA Street Food (Sterling)</p>
-                <p>45633 Dulles Eastern Plaza #100, Sterling, VA 20166</p>
+                <p className="font-semibold">Saahil Restaurant</p>
+                <p>22000 Dulles Retail Plaza Unit 102, Dulles, VA 20166</p>
+                <p className="mt-1 font-medium">5:00 PM - 7:00 PM</p>
               </div>
             </div>
           </div>

@@ -178,11 +178,11 @@ export function generateConfirmationEmail(
                       </tr>
                       <tr>
                         <td style="color: #1f2937; font-weight: 600;">Time:</td>
-                        <td style="color: #4b5563;">7:00 PM</td>
+                        <td style="color: #4b5563;">5:00 PM - 7:00 PM</td>
                       </tr>
                       <tr>
                         <td style="color: #1f2937; font-weight: 600;">Venue:</td>
-                        <td style="color: #4b5563;">CHA Street Food (Sterling)<br>45633 Dulles Eastern Plaza #100, Sterling, VA 20166</td>
+                        <td style="color: #4b5563;">Saahil Restaurant<br>22000 Dulles Retail Plaza Unit 102, Dulles, VA 20166</td>
                       </tr>
                       <tr>
                         <td style="color: #1f2937; font-weight: 600;">Guests:</td>
@@ -274,8 +274,8 @@ ${rsvp_status === 'Yes' ? `
 EVENT DETAILS
 Event: KDSP Virginia Chapter Launch
 Date: Saturday, January 24, 2026
-Time: 7:00 PM
-Venue: CHA Street Food (Sterling), 45633 Dulles Eastern Plaza #100, Sterling, VA 20166
+Time: 5:00 PM - 7:00 PM
+Venue: Saahil Restaurant, 22000 Dulles Retail Plaza Unit 102, Dulles, VA 20166
 Number of Guests: ${number_of_guests}
 
 YOUR CONFIRMATION ID

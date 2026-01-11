@@ -4,8 +4,8 @@ import { createEvents } from 'ics';
 export async function GET() {
   try {
     // Event details
-    const eventDate = new Date('2026-01-24T19:00:00');
-    const eventEndDate = new Date('2026-01-24T22:00:00');
+    const eventDate = new Date('2026-01-24T17:00:00');
+    const eventEndDate = new Date('2026-01-24T19:00:00');
 
     const event = {
       start: [
@@ -26,7 +26,7 @@ export async function GET() {
       description:
         'Join us for an introductory evening to learn about KDSP\'s inspiring work supporting children with Down syndrome and their families. ' +
         'Help us build a strong Virginia Chapter focused on inclusion, education, and empowerment.',
-      location: 'CHA Street Food (Sterling), 45633 Dulles Eastern Plaza #100, Sterling, VA 20166',
+      location: 'Saahil Restaurant, 22000 Dulles Retail Plaza Unit 102, Dulles, VA 20166',
       url: 'https://www.kdsp.org.pk',
       status: 'CONFIRMED' as const,
       busyStatus: 'BUSY' as const,

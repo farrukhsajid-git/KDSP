@@ -86,8 +86,8 @@ function ThankYouContent() {
               <div className="space-y-2 text-gray-700">
                 <p><span className="font-semibold">Event:</span> KDSP Virginia Chapter Launch</p>
                 <p><span className="font-semibold">Date:</span> Saturday, January 24, 2026</p>
-                <p><span className="font-semibold">Time:</span> 7:00 PM</p>
-                <p><span className="font-semibold">Venue:</span> CHA Street Food (Sterling), 45633 Dulles Eastern Plaza #100, Sterling, VA 20166</p>
+                <p><span className="font-semibold">Time:</span> 5:00 PM - 7:00 PM</p>
+                <p><span className="font-semibold">Venue:</span> Saahil Restaurant, 22000 Dulles Retail Plaza Unit 102, Dulles, VA 20166</p>
               </div>
             </div>
           )}
