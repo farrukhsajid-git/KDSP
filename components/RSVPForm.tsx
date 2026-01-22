@@ -348,10 +348,10 @@ export default function RSVPForm() {
         </label>
       </div>
 
-      {/* Will you be attending */}
+      {/* Interest in rescheduled event */}
       <div>
         <label className="block text-sm font-semibold text-gray-900 mb-3">
-          Will you be attending the January 24 event? <span className="text-red-500">*</span>
+          Would you like to attend the rescheduled event? <span className="text-red-500">*</span>
         </label>
         <div className="space-y-2.5">
           <label className="flex items-start">
@@ -364,7 +364,7 @@ export default function RSVPForm() {
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-0.5"
             />
             <span className="ml-3 text-sm text-gray-700">
-              Yes, I&apos;ll attend in person
+              Yes, I&apos;d like to attend when the event is rescheduled
             </span>
           </label>
 
@@ -378,7 +378,7 @@ export default function RSVPForm() {
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-0.5"
             />
             <span className="ml-3 text-sm text-gray-700">
-              No, I can&apos;t attend but would like to stay updated about future events
+              Not sure, but I&apos;d like to stay updated about future events
             </span>
           </label>
         </div>
@@ -390,7 +390,7 @@ export default function RSVPForm() {
         disabled={loading}
         className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed font-semibold text-base shadow-md"
       >
-        {loading ? 'Submitting...' : 'Share My Interest'}
+        {loading ? 'Submitting...' : 'Sign Up for Updates'}
       </button>
 
       {/* Message Display */}

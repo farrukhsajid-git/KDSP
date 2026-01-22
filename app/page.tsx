@@ -4,6 +4,27 @@ import { FaCalendarAlt, FaMapMarkerAlt, FaWhatsapp } from 'react-icons/fa';
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Event Cancellation Banner */}
+      <div className="bg-red-600 text-white py-4 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span className="font-bold text-lg">EVENT CANCELLED</span>
+          </div>
+          <p className="text-sm md:text-base">
+            Due to the <strong>Winter Storm Warning</strong>, the January 24th event has been cancelled.
+          </p>
+          <p className="text-sm md:text-base mt-1">
+            The event will be rescheduled for a future date. We will reach out to you with updates on the next event.
+          </p>
+          <p className="text-sm md:text-base mt-2 font-medium">
+            You can still fill out the form below to receive future event updates!
+          </p>
+        </div>
+      </div>
+
       {/* Hero Section with Gradient */}
       <section className="relative bg-gradient-to-r from-blue-500 to-blue-400 pt-12 pb-20 px-4 overflow-hidden">
         {/* Mobile: Images at top split 50/50 */}
@@ -52,13 +73,16 @@ export default function Home() {
           </p>
 
           {/* Save the Date Card */}
-          <div className="bg-white rounded-2xl shadow-xl p-6 max-w-md mx-auto">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Event Details</h2>
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <FaCalendarAlt className="text-blue-500 text-xl" />
-              <span className="text-2xl font-bold text-gray-900">January 24</span>
+          <div className="bg-white rounded-2xl shadow-xl p-6 max-w-md mx-auto relative">
+            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-4 py-1 rounded-full text-sm font-bold">
+              CANCELLED
             </div>
-            <div className="flex items-start justify-center gap-2 text-gray-600">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 mt-2">Event Details</h2>
+            <div className="flex items-center justify-center gap-2 mb-3 opacity-60">
+              <FaCalendarAlt className="text-blue-500 text-xl" />
+              <span className="text-2xl font-bold text-gray-900 line-through">January 24</span>
+            </div>
+            <div className="flex items-start justify-center gap-2 text-gray-600 opacity-60">
               <FaMapMarkerAlt className="text-blue-500 text-lg mt-1 flex-shrink-0" />
               <div className="text-sm">
                 <p className="font-semibold">Saahil Restaurant</p>
@@ -66,6 +90,9 @@ export default function Home() {
                 <p className="mt-1 font-medium">5:00 PM - 7:00 PM</p>
               </div>
             </div>
+            <p className="text-center text-red-600 font-medium mt-4 text-sm">
+              New date to be announced soon
+            </p>
           </div>
 
           {/* WhatsApp Group Button */}
@@ -89,11 +116,16 @@ export default function Home() {
       <main className="max-w-4xl mx-auto px-4 mt-6 pb-16">
         <div className="bg-white rounded-lg shadow-lg p-6 md:p-10">
           {/* Description */}
-          <p className="text-gray-700 text-center mb-8 leading-relaxed">
-            We&apos;re excited to bring KDSP to Virginia! Join us for an introductory evening
+          <p className="text-gray-700 text-center mb-4 leading-relaxed">
+            We&apos;re excited to bring KDSP to Virginia! We look forward to hosting an introductory evening
             to learn about KDSP&apos;s inspiring work supporting children with Down syndrome
             and their families, and discover how you can help us build a strong Virginia Chapter focused on inclusion, education, and empowerment.
           </p>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8 text-center">
+            <p className="text-blue-800 font-medium">
+              Fill out the form below to receive updates about our rescheduled event and future KDSP Virginia activities!
+            </p>
+          </div>
 
           {/* RSVP Form */}
           <RSVPForm />
