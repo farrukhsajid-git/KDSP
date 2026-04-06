@@ -85,9 +85,9 @@ function ThankYouContent() {
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Event Details</h3>
               <div className="space-y-2 text-gray-700">
                 <p><span className="font-semibold">Event:</span> KDSP Virginia Chapter Launch</p>
-                <p><span className="font-semibold">Date:</span> Saturday, January 24, 2026</p>
-                <p><span className="font-semibold">Time:</span> 5:00 PM - 7:00 PM</p>
-                <p><span className="font-semibold">Venue:</span> Saahil Restaurant, 22000 Dulles Retail Plaza Unit 102, Dulles, VA 20166</p>
+                <p><span className="font-semibold">Date:</span> Saturday, May 16, 2026</p>
+                <p><span className="font-semibold">Time:</span> To be Announced</p>
+                <p><span className="font-semibold">Venue:</span> To be Announced</p>
               </div>
             </div>
           )}

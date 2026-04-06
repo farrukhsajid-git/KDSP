@@ -117,9 +117,9 @@ export function generateConfirmationEmail(
 
   const subject =
     rsvp_status === 'Yes'
-      ? `RSVP Confirmed: KDSP Virginia Chapter Launch - January 24, 2026`
+      ? `RSVP Confirmed: KDSP Virginia Chapter Launch - May 16, 2026`
       : rsvp_status === 'Maybe'
-      ? `RSVP Received: KDSP Virginia Chapter Launch - January 24, 2026`
+      ? `RSVP Received: KDSP Virginia Chapter Launch - May 16, 2026`
       : `Thank You for Your Interest - KDSP Virginia Chapter`;
 
   const html = `
@@ -174,15 +174,15 @@ export function generateConfirmationEmail(
                       </tr>
                       <tr>
                         <td style="color: #1f2937; font-weight: 600;">Date:</td>
-                        <td style="color: #4b5563;">Saturday, January 24, 2026</td>
+                        <td style="color: #4b5563;">Saturday, May 16, 2026</td>
                       </tr>
                       <tr>
                         <td style="color: #1f2937; font-weight: 600;">Time:</td>
-                        <td style="color: #4b5563;">5:00 PM - 7:00 PM</td>
+                        <td style="color: #4b5563;">To be Announced</td>
                       </tr>
                       <tr>
                         <td style="color: #1f2937; font-weight: 600;">Venue:</td>
-                        <td style="color: #4b5563;">Saahil Restaurant<br>22000 Dulles Retail Plaza Unit 102, Dulles, VA 20166</td>
+                        <td style="color: #4b5563;">To be Announced</td>
                       </tr>
                       <tr>
                         <td style="color: #1f2937; font-weight: 600;">Guests:</td>
@@ -273,9 +273,9 @@ ${
 ${rsvp_status === 'Yes' ? `
 EVENT DETAILS
 Event: KDSP Virginia Chapter Launch
-Date: Saturday, January 24, 2026
-Time: 5:00 PM - 7:00 PM
-Venue: Saahil Restaurant, 22000 Dulles Retail Plaza Unit 102, Dulles, VA 20166
+Date: Saturday, May 16, 2026
+Time: To be Announced
+Venue: To be Announced
 Number of Guests: ${number_of_guests}
 
 YOUR CONFIRMATION ID
